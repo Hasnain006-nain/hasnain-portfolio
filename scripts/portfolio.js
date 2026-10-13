@@ -5,6 +5,36 @@
   const progress = document.querySelector(".progress i");
   const r1 = document.querySelector(".ribbon-1");
   const r2 = document.querySelector(".ribbon-2");
+  const nav = document.querySelector(".nav");
+  const navToggle = document.querySelector(".nav-toggle");
+  const navLinks = document.querySelector(".navlinks");
+
+  function closeNavigation(returnFocus = false){
+    if (!nav || !navToggle) return;
+    nav.classList.remove("is-open");
+    navToggle.setAttribute("aria-expanded", "false");
+    navToggle.setAttribute("aria-label", "Open navigation");
+    if (returnFocus) navToggle.focus();
+  }
+
+  navToggle?.addEventListener("click", () => {
+    const isOpen = navToggle.getAttribute("aria-expanded") === "true";
+    nav.classList.toggle("is-open", !isOpen);
+    navToggle.setAttribute("aria-expanded", String(!isOpen));
+    navToggle.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+  });
+
+  navLinks?.addEventListener("click", event => {
+    if (event.target.closest("a")) closeNavigation();
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && nav?.classList.contains("is-open")) closeNavigation(true);
+  });
+
+  document.addEventListener("click", event => {
+    if (nav?.classList.contains("is-open") && !nav.contains(event.target)) closeNavigation();
+  });
 
   // Portfolio chrome stays hidden during the immersive lab intro.
   function updateMode(){
@@ -64,6 +94,7 @@
   // Anchor navigation: native fast scroll, smooth jumps only.
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener("click", e => {
+      closeNavigation();
       const el = document.querySelector(a.getAttribute("href"));
       if (!el) return;
       e.preventDefault();

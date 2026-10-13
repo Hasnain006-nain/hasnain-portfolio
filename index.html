@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles/portfolio.css?v=clarke-quote-20261013">
+<link rel="stylesheet" href="./styles/portfolio.css?v=responsive-nav-20261013">
 
 </head>
 <body class="lab-active">
@@ -38,16 +38,19 @@
 <div class="vignette"></div>
 <div class="progress"><i></i></div>
 
-<nav class="nav">
+<nav class="nav" aria-label="Main navigation">
   <a class="brand magnetic" href="#lab" aria-label="Home">
     <span class="brand-mark">HH</span><span>Hasnain Haider</span>
   </a>
-  <div class="navlinks">
+  <div class="navlinks" id="primary-navigation">
     <a class="magnetic" href="#about">About</a><a class="magnetic" href="#services">Expertise</a><a class="magnetic" href="#work">Work</a>
     <a class="magnetic" href="#research">Research</a>
     <a class="magnetic" href="#experience">Experience</a><a class="magnetic" href="#skills">Stack</a>
-    <a class="navcta magnetic" href="mailto:hhnain1006@gmail.com">Let's talk ↗</a>
   </div>
+  <a class="navcta magnetic" href="mailto:hhnain1006@gmail.com">Let's talk ↗</a>
+  <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 
 <div id="smooth-content">
