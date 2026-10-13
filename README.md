@@ -12,7 +12,7 @@
   Applied Machine Learning · Agentic AI · Computer Vision · CPU-Only RAG · Trustworthy AI
 </p>
 
-[**Explore Live Portfolio ↗**](https://hasnain-portfolio-snowy.vercel.app) · [**Download CV ↗**](https://drive.google.com/file/d/1DuE9gzaUu5IynazUYulVGotjL_d-cT7l/view?usp=sharing) · [**Get in Touch ↗**](mailto:hhnain1006@gmail.com)
+[**Explore Live Portfolio ↗**](https://hasnain-portfolio-snowy.vercel.app) · [**Download CV ↗**](https://drive.google.com/file/d/1-IOyj2U32JB1_o_sIrCoPV8zj-jeC_fr/view?usp=sharing) · [**Get in Touch ↗**](mailto:hhnain1006@gmail.com)
 
 ---
 
