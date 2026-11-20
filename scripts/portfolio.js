@@ -48,20 +48,25 @@
     }
   }
 
-  // Reveal content only when it enters view.
+  // Reveal content smoothly when entering view (fast threshold for mobile/landscape).
   const reveals = [...document.querySelectorAll("[data-reveal]")];
+  const revealNow = el => el.classList.add("in");
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("in");
+          revealNow(entry.target);
           observer.unobserve(entry.target);
         }
       });
-    }, {threshold:.08, rootMargin:"0px 0px -4% 0px"});
-    reveals.forEach(el => observer.observe(el));
+    }, {threshold:.02, rootMargin:"0px 0px 4% 0px"});
+    reveals.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < innerHeight * 1.02) revealNow(el);
+      else observer.observe(el);
+    });
   } else {
-    reveals.forEach(el => el.classList.add("in"));
+    reveals.forEach(revealNow);
   }
 
   // Metrics count once.
@@ -112,8 +117,8 @@
     let holoTargetX = 50;
     let holoTargetY = 50;
     const moveHoloSpotlight = () => {
-      holoCurrentX += (holoTargetX - holoCurrentX) * .18;
-      holoCurrentY += (holoTargetY - holoCurrentY) * .18;
+      holoCurrentX += (holoTargetX - holoCurrentX) * .38;
+      holoCurrentY += (holoTargetY - holoCurrentY) * .38;
       card.style.setProperty("--holo-x",holoCurrentX.toFixed(2)+"%");
       card.style.setProperty("--holo-y",holoCurrentY.toFixed(2)+"%");
       if (Math.abs(holoTargetX - holoCurrentX) > .08 || Math.abs(holoTargetY - holoCurrentY) > .08) {
@@ -142,7 +147,7 @@
       setHoloTarget(px*100,py*100);
       card.style.setProperty("--portrait-img-x",((px-.5)*10).toFixed(2)+"px");
       card.style.setProperty("--portrait-img-y",((py-.5)*10).toFixed(2)+"px");
-      card.style.setProperty("--portrait-img-scale","1.045");
+      card.style.setProperty("--portrait-img-scale","1.12");
     };
     const resetPortrait = () => {
       if (!isPortrait) return;
@@ -153,7 +158,7 @@
       setHoloTarget(50,50);
       card.style.setProperty("--portrait-img-x","0px");
       card.style.setProperty("--portrait-img-y","0px");
-      card.style.setProperty("--portrait-img-scale","1.02");
+      card.style.setProperty("--portrait-img-scale","1.09");
     };
     card.addEventListener("pointermove", e => {
       if (reduce) return;
@@ -199,8 +204,8 @@
     el.addEventListener("pointerleave", () => el.style.transform = "");
   });
 
-  // Custom cursor is hidden over the white lab intro so the native pointer
-  // can interact naturally with the original fluid simulation.
+  // Custom cursor runs only on fine-pointer desktop devices; mobile/touch uses native pointers.
+  const finePointer = matchMedia("(pointer: fine) and (hover: hover)").matches;
   const cursor = document.querySelector(".cursor");
   const dot = document.querySelector(".cursor-dot");
   const trail = document.querySelector(".cursor-trail");
@@ -208,27 +213,30 @@
   let lastX=tx, lastY=ty, cursorMoveTimer=0;
   let lastCursorFrame=performance.now();
 
-  addEventListener("pointermove", e => {
-    tx=e.clientX; ty=e.clientY;
-    const dx = tx-lastX;
-    const dy = ty-lastY;
-    const speed = Math.min(34, Math.hypot(dx,dy));
-    const angle = Math.atan2(dy,dx) * 180 / Math.PI;
-    lastX = tx;
-    lastY = ty;
-    document.documentElement.style.setProperty("--mx",e.clientX+"px");
-    document.documentElement.style.setProperty("--my",e.clientY+"px");
-    document.documentElement.style.setProperty("--cursor-speed",speed.toFixed(2)+"px");
-    document.documentElement.style.setProperty("--cursor-angle",angle.toFixed(2)+"deg");
-    body.classList.add("cursor-moving");
-    clearTimeout(cursorMoveTimer);
-    cursorMoveTimer = setTimeout(() => body.classList.remove("cursor-moving"), 140);
-    if (dot) dot.style.transform=`translate(${tx}px,${ty}px) translate(-50%,-50%)`;
-  }, {passive:true});
+  if (finePointer) {
+    addEventListener("pointermove", e => {
+      if (e.pointerType !== "mouse") return;
+      tx=e.clientX; ty=e.clientY;
+      const dx = tx-lastX;
+      const dy = ty-lastY;
+      const speed = Math.min(34, Math.hypot(dx,dy));
+      const angle = Math.atan2(dy,dx) * 180 / Math.PI;
+      lastX = tx;
+      lastY = ty;
+      document.documentElement.style.setProperty("--mx",e.clientX+"px");
+      document.documentElement.style.setProperty("--my",e.clientY+"px");
+      document.documentElement.style.setProperty("--cursor-speed",speed.toFixed(2)+"px");
+      document.documentElement.style.setProperty("--cursor-angle",angle.toFixed(2)+"deg");
+      body.classList.add("cursor-moving");
+      clearTimeout(cursorMoveTimer);
+      cursorMoveTimer = setTimeout(() => body.classList.remove("cursor-moving"), 140);
+      if (dot) dot.style.transform=`translate3d(${tx}px,${ty}px,0) translate(-50%,-50%)`;
+    }, {passive:true});
 
-  addEventListener("pointerdown", () => body.classList.add("cursor-down"), {passive:true});
-  addEventListener("pointerup", () => body.classList.remove("cursor-down"), {passive:true});
-  addEventListener("pointercancel", () => body.classList.remove("cursor-down"), {passive:true});
+    addEventListener("pointerdown", e => { if (e.pointerType === "mouse") body.classList.add("cursor-down"); }, {passive:true});
+    addEventListener("pointerup", () => body.classList.remove("cursor-down"), {passive:true});
+    addEventListener("pointercancel", () => body.classList.remove("cursor-down"), {passive:true});
+  }
 
   const interactiveItems = document.querySelectorAll(
     "a,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.clarity-callout,.skill-pill,.social-orb,.btn,.tilt"
@@ -298,38 +306,201 @@
     card.addEventListener("touchstart", e => setInteractionPoint(card, e), {passive:true});
   });
 
-  function frame(now=performance.now()){
-    const dt = Math.min(48, Math.max(16, now-lastCursorFrame));
-    lastCursorFrame = now;
-    const ringEase = 1 - Math.pow(.02, dt / 260);
-    const trailEase = 1 - Math.pow(.05, dt / 420);
+  let lastScrollPos = -1;
+  function updateScrollDriven(){
+    if (scrollY === lastScrollPos) return;
+    lastScrollPos = scrollY;
     const max = Math.max(1,document.documentElement.scrollHeight-innerHeight);
     const p = scrollY/max;
     if (progress) progress.style.width = (p*100)+"%";
     if (r1) r1.style.transform=`translate3d(${-p*360}px,0,0)`;
     if (r2) r2.style.transform=`translate3d(${(-18+p*23)}%,0,0)`;
-
-    if (cursor) {
-      cx += (tx-cx)*ringEase;
-      cy += (ty-cy)*ringEase;
-      cursor.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`;
-    }
-    if (trail) {
-      gx += (tx-gx)*trailEase;
-      gy += (ty-gy)*trailEase;
-      trail.style.transform=`translate(${gx}px,${gy}px) translate(-50%,-50%) rotate(var(--cursor-angle,0deg))`;
-    }
-
-    // Hide custom cursor while the pointer is over the fluid lab.
-    const inLab = scrollY < lab.offsetHeight*.92;
-    if (cursor) cursor.style.opacity = inLab ? "0" : ".74";
-    if (dot) dot.style.opacity = inLab ? "0" : ".58";
-    if (trail) trail.style.opacity = inLab ? "0" : "";
-
     updateMode();
-    requestAnimationFrame(frame);
   }
 
-  updateMode();
-  requestAnimationFrame(frame);
+  function frame(now=performance.now()){
+    updateScrollDriven();
+    if (finePointer) {
+      const dt = Math.min(48, Math.max(16, now-lastCursorFrame));
+      lastCursorFrame = now;
+      const ringEase = 1 - Math.pow(.0008, dt / 72);
+      const trailEase = 1 - Math.pow(.002, dt / 110);
+      if (cursor) {
+        cx += (tx-cx)*ringEase;
+        cy += (ty-cy)*ringEase;
+        cursor.style.transform=`translate3d(${cx}px,${cy}px,0) translate(-50%,-50%)`;
+      }
+      if (trail) {
+        gx += (tx-gx)*trailEase;
+        gy += (ty-gy)*trailEase;
+        trail.style.transform=`translate3d(${gx}px,${gy}px,0) translate(-50%,-50%) rotate(var(--cursor-angle,0deg))`;
+      }
+      const inLab = scrollY < lab.offsetHeight*.92;
+      if (cursor) cursor.style.opacity = inLab ? "0" : ".74";
+      if (dot) dot.style.opacity = inLab ? "0" : ".58";
+      if (trail) trail.style.opacity = inLab ? "0" : "";
+      requestAnimationFrame(frame);
+    }
+  }
+
+  addEventListener("resize", () => { lastScrollPos = -1; updateScrollDriven(); }, {passive:true});
+  if (!finePointer) {
+    addEventListener("scroll", updateScrollDriven, {passive:true});
+  }
+
+  updateScrollDriven();
+  if (finePointer) requestAnimationFrame(frame);
+
+  // Contact form: low-latency submission + copy email + mailto fallback.
+  const copyBtn = document.querySelector(".copy-email-btn");
+  if (copyBtn) {
+    let copyTimer = 0;
+    copyBtn.addEventListener("click", async () => {
+      const email = copyBtn.dataset.email || "hhnain1006@gmail.com";
+      const label = copyBtn.querySelector(".contact-button-label");
+      try {
+        await navigator.clipboard.writeText(email);
+        if (label) label.textContent = "Copied ✓";
+        copyBtn.classList.add("is-copied");
+      } catch {
+        if (label) label.textContent = email;
+      }
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => {
+        if (label) label.textContent = "Copy email";
+        copyBtn.classList.remove("is-copied");
+      }, 2200);
+    });
+  }
+
+  const contactForm = document.getElementById("contact-form");
+  if (contactForm) {
+    const topicInput = document.getElementById("contact-topic");
+    const topicChips = [...contactForm.querySelectorAll(".topic-chip")];
+    const nameInput = document.getElementById("contact-name");
+    const emailInput = document.getElementById("contact-email");
+    const subjectInput = document.getElementById("contact-subject");
+    const messageInput = document.getElementById("contact-message");
+    const websiteInput = document.getElementById("contact-website");
+    const submitBtn = contactForm.querySelector(".contact-submit");
+    const submitLabel = submitBtn?.querySelector(".contact-button-label");
+    const statusBox = document.getElementById("contact-status");
+    const emailRegex = /^[^\s@<>()[\]\\,;:\s@"]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+    topicChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        topicChips.forEach(item => item.classList.remove("is-active"));
+        chip.classList.add("is-active");
+        if (topicInput) topicInput.value = chip.dataset.topic || "General Inquiry";
+      });
+    });
+
+    const clearFieldErrors = () => {
+      [nameInput, emailInput, subjectInput, messageInput].forEach(el => el?.classList.remove("is-invalid"));
+    };
+
+    [nameInput, emailInput, subjectInput, messageInput].forEach(el => {
+      el?.addEventListener("input", () => el.classList.remove("is-invalid"));
+    });
+
+    const showStatus = (kind, text, fallbackHref = "") => {
+      if (!statusBox) return;
+      statusBox.hidden = false;
+      statusBox.className = `form-status ${kind === "success" ? "is-success" : "is-error"}`;
+      statusBox.replaceChildren();
+      const msgSpan = document.createElement("span");
+      msgSpan.textContent = text;
+      statusBox.appendChild(msgSpan);
+      if (fallbackHref) {
+        const link = document.createElement("a");
+        link.className = "form-fallback-link";
+        link.href = fallbackHref;
+        link.textContent = "Open in email app ↗";
+        statusBox.appendChild(link);
+      }
+    };
+
+    contactForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      clearFieldErrors();
+      if (submitBtn?.disabled) return;
+
+      const name = (nameInput?.value || "").trim();
+      const email = (emailInput?.value || "").trim();
+      const topic = (topicInput?.value || "Collaboration").trim();
+      const subject = (subjectInput?.value || "").trim();
+      const message = (messageInput?.value || "").trim();
+      const website = (websiteInput?.value || "").trim();
+
+      if (name.length < 2) {
+        nameInput?.classList.add("is-invalid");
+        nameInput?.focus();
+        showStatus("error", "Please enter your name (at least 2 characters).");
+        return;
+      }
+      if (!emailRegex.test(email)) {
+        emailInput?.classList.add("is-invalid");
+        emailInput?.focus();
+        showStatus("error", "Please enter a valid email address.");
+        return;
+      }
+      if (subject.length < 2) {
+        subjectInput?.classList.add("is-invalid");
+        subjectInput?.focus();
+        showStatus("error", "Please add a short subject line.");
+        return;
+      }
+      if (message.length < 5) {
+        messageInput?.classList.add("is-invalid");
+        messageInput?.focus();
+        showStatus("error", "Please write a brief message (at least 5 characters).");
+        return;
+      }
+
+      const mailtoFallback =
+        "mailto:hhnain1006@gmail.com?subject=" +
+        encodeURIComponent(`[${topic}] ${subject}`) +
+        "&body=" +
+        encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+
+      if (submitBtn) submitBtn.disabled = true;
+      submitBtn?.classList.add("is-loading");
+      if (submitLabel) submitLabel.textContent = "Sending...";
+      if (statusBox) statusBox.hidden = true;
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, topic, subject, message, website })
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data?.ok) {
+          if (data?.field === "name") nameInput?.classList.add("is-invalid");
+          if (data?.field === "email") emailInput?.classList.add("is-invalid");
+          if (data?.field === "subject") subjectInput?.classList.add("is-invalid");
+          if (data?.field === "message") messageInput?.classList.add("is-invalid");
+          showStatus(
+            "error",
+            data?.error || "Could not deliver right now.",
+            response.status >= 500 || response.status === 404 ? mailtoFallback : ""
+          );
+          return;
+        }
+
+        const speedNote = typeof data.latencyMs === "number" ? ` (${data.latencyMs}ms)` : "";
+        showStatus("success", `Message delivered to Hasnain${speedNote}. I'll reply to ${email} soon.`);
+        contactForm.reset();
+        topicChips.forEach((chip, idx) => chip.classList.toggle("is-active", idx === 0));
+        if (topicInput && topicChips[0]) topicInput.value = topicChips[0].dataset.topic || "Research Collaboration";
+      } catch {
+        showStatus("error", "Network unavailable. You can still send via email:", mailtoFallback);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        submitBtn?.classList.remove("is-loading");
+        if (submitLabel) submitLabel.textContent = "Send message";
+      }
+    });
+  }
 })();

@@ -1661,32 +1661,36 @@ function runSimulation(config) {
     updatePointerUpData(pointers[0]);
   });
 
-  canvas.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    const touches = e.targetTouches;
-    while (touches.length >= pointers.length)
-      pointers.push(new pointerPrototype());
-    for (let i = 0; i < touches.length; i++) {
-      let posX = scaleByPixelRatio(touches[i].pageX);
-      let posY = scaleByPixelRatio(touches[i].pageY);
-      updatePointerDownData(pointers[i + 1], touches[i].identifier, posX, posY);
-    }
-  });
+  canvas.addEventListener(
+    "touchstart",
+    (e) => {
+      const touches = e.targetTouches;
+      while (touches.length >= pointers.length)
+        pointers.push(new pointerPrototype());
+      const rect = canvas.getBoundingClientRect();
+      for (let i = 0; i < touches.length; i++) {
+        let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
+        let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
+        updatePointerDownData(pointers[i + 1], touches[i].identifier, posX, posY);
+      }
+    },
+    { passive: true }
+  );
 
   canvas.addEventListener(
     "touchmove",
     (e) => {
-      e.preventDefault();
       const touches = e.targetTouches;
+      const rect = canvas.getBoundingClientRect();
       for (let i = 0; i < touches.length; i++) {
         let pointer = pointers[i + 1];
-        if (!pointer.down) continue;
-        let posX = scaleByPixelRatio(touches[i].pageX);
-        let posY = scaleByPixelRatio(touches[i].pageY);
+        if (!pointer || !pointer.down) continue;
+        let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
+        let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
         updatePointerMoveData(pointer, posX, posY);
       }
     },
-    false
+    { passive: true }
   );
 
   window.addEventListener("touchend", (e) => {
