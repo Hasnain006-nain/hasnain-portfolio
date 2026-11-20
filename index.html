@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles/portfolio.css?v=landscape-v3-20261121">
+<link rel="stylesheet" href="./styles/portfolio.css?v=landscape-v4-20261121">
 
 </head>
 <body class="lab-active">
@@ -96,16 +96,21 @@
             <span class="portrait-rim" aria-hidden="true"></span>
           </div>
           <div class="portrait-bottom">
-            <div>
-              <span class="portrait-kicker"><span class="status" aria-hidden="true"></span> Available for AI / Research</span>
+            <span class="id-badge-crest" aria-hidden="true">
+              <svg viewBox="0 0 36 36">
+                <rect x="3" y="3" width="30" height="30" rx="9" fill="rgba(97,246,214,0.10)" stroke="rgba(97,246,214,0.48)" stroke-width="1.5"/>
+                <path d="M18 8L25 12V20C25 24.2 22 27.4 18 28.6C14 27.4 11 24.2 11 20V12L18 8Z" fill="none" stroke="#61f6d6" stroke-width="1.6"/>
+                <circle cx="18" cy="18" r="3" fill="#7cf7df"/>
+              </svg>
+            </span>
+            <div class="id-badge-copy">
+              <span class="portrait-kicker"><i aria-hidden="true"></i>VERIFIED ID · AI LAB</span>
               <strong>Researcher + Builder</strong>
               <small>AI systems · Alor Setar, Malaysia</small>
-              <div class="portrait-inline-tags" aria-hidden="true">
-                <span>AGENTIC AI / RAG</span>
-                <span>VISION / XAI</span>
-              </div>
             </div>
-            <span class="status desktop-status" aria-hidden="true"></span>
+            <span class="id-badge-telemetry" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </span>
           </div>
         </div>
       </div>
@@ -734,6 +739,26 @@
           <p>Research collaboration, applied ML systems, agentic workflows, RAG experiments or computer-vision deployment — send a note directly and your message will land straight in my inbox.</p>
           <div class="contact-availability"><span aria-hidden="true"></span>Open to research &amp; applied AI collaborations</div>
 
+          <div class="contact-signal-hud" aria-hidden="true">
+            <div class="signal-hud-top">
+              <span class="signal-node"><i></i>NODE // ALOR SETAR, MY</span>
+              <span class="signal-latency">DIRECT UPLINK · ~20ms</span>
+            </div>
+            <svg class="signal-wave-svg" viewBox="0 0 320 34" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="signalWaveGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#61f6d6" stop-opacity=".2"/>
+                  <stop offset="50%" stop-color="#61f6d6" stop-opacity=".95"/>
+                  <stop offset="100%" stop-color="#9b7bff" stop-opacity=".35"/>
+                </linearGradient>
+              </defs>
+              <path class="signal-grid-line" d="M0 17 H320"/>
+              <path class="signal-wave-path" d="M0 17 Q 20 4, 40 17 T 80 17 T 120 17 T 160 17 T 200 17 T 240 17 T 280 17 T 320 17" stroke="url(#signalWaveGrad)"/>
+              <circle class="signal-packet p1" cx="0" cy="17" r="3.2"/>
+              <circle class="signal-packet p2" cx="0" cy="17" r="2.6"/>
+            </svg>
+          </div>
+
           <div class="contact-direct">
             <div class="contact-actions">
               <a class="btn magnetic" href="mailto:hhnain1006@gmail.com"><span class="contact-button-label">hhnain1006@gmail.com</span><span class="arrow" aria-hidden="true">↗</span></a>
@@ -807,7 +832,30 @@
 </main>
 </div>
 
-<div class="cursor-trail"></div><div class="cursor"></div><div class="cursor-dot"></div>
+<div class="cursor-smoke-layer" aria-hidden="true"></div>
+<div class="cursor-trail" aria-hidden="true"></div>
+<div class="cursor" aria-hidden="true">
+  <svg class="cursor-robot-svg" viewBox="0 0 44 44">
+    <defs>
+      <linearGradient id="botCursorGrad" x1="6" y1="6" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#61f6d6"/>
+        <stop offset="0.55" stop-color="#6ea8ff"/>
+        <stop offset="1" stop-color="#9b7bff"/>
+      </linearGradient>
+    </defs>
+    <line x1="22" y1="3" x2="22" y2="9" stroke="#61f6d6" stroke-width="2" stroke-linecap="round"/>
+    <circle class="bot-antenna-tip" cx="22" cy="3" r="2.3" fill="#9ffef0"/>
+    <rect x="5" y="16" width="3" height="8" rx="1.5" fill="#6ea8ff"/>
+    <rect x="36" y="16" width="3" height="8" rx="1.5" fill="#9b7bff"/>
+    <rect x="8" y="9" width="28" height="22" rx="8" fill="rgba(8,14,24,0.92)" stroke="url(#botCursorGrad)" stroke-width="2"/>
+    <rect x="11" y="13" width="22" height="11" rx="5" fill="rgba(14,25,42,0.95)" stroke="rgba(97,246,214,0.35)" stroke-width="1"/>
+    <circle class="bot-eye left" cx="16.5" cy="18.5" r="2.4" fill="#61f6d6"/>
+    <circle class="bot-eye right" cx="27.5" cy="18.5" r="2.4" fill="#61f6d6"/>
+    <path d="M17 27H27" stroke="#61f6d6" stroke-width="1.6" stroke-linecap="round" opacity="0.85"/>
+    <path d="M17 31L19 36H25L27 31Z" fill="rgba(97,246,214,0.35)" stroke="#61f6d6" stroke-width="1.2"/>
+  </svg>
+</div>
+<div class="cursor-dot" aria-hidden="true"></div>
 
 
 
@@ -815,6 +863,6 @@
   <script src="./webgl-fluid.js?v=fluid-touch-scroll-20261120"></script>
 
   <!-- Portfolio interactions -->
-<script src="./scripts/portfolio.js?v=landscape-v3-20261121"></script>
+<script src="./scripts/portfolio.js?v=landscape-v4-20261121"></script>
 </body>
 </html>

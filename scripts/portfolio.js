@@ -107,18 +107,21 @@
     });
   });
 
-  // Refined project/portrait depth.
+  // Refined project/portrait depth + mobile & desktop hologram scan tap/hover reveal.
   document.querySelectorAll(".tilt").forEach(card => {
     const isPortrait = card.classList.contains("portrait-card");
-    let portraitTimer;
+    const mediaEl = isPortrait ? (card.querySelector(".portrait-media") || card) : card;
+    const holoEl = isPortrait ? card.querySelector(".portrait-holo") : null;
+    let portraitTimer = 0;
+    let holoScanRaf = 0;
     let holoRaf = 0;
     let holoCurrentX = 50;
     let holoCurrentY = 50;
     let holoTargetX = 50;
     let holoTargetY = 50;
     const moveHoloSpotlight = () => {
-      holoCurrentX += (holoTargetX - holoCurrentX) * .38;
-      holoCurrentY += (holoTargetY - holoCurrentY) * .38;
+      holoCurrentX += (holoTargetX - holoCurrentX) * .42;
+      holoCurrentY += (holoTargetY - holoCurrentY) * .42;
       card.style.setProperty("--holo-x",holoCurrentX.toFixed(2)+"%");
       card.style.setProperty("--holo-y",holoCurrentY.toFixed(2)+"%");
       if (Math.abs(holoTargetX - holoCurrentX) > .08 || Math.abs(holoTargetY - holoCurrentY) > .08) {
@@ -136,57 +139,97 @@
       holoTargetY = y;
       if (!holoRaf) holoRaf = requestAnimationFrame(moveHoloSpotlight);
     };
-    const setPortraitAura = e => {
+    const getPoint = e => e?.touches?.[0] || e?.changedTouches?.[0] || e;
+    const setPortraitAura = (e, size = 105) => {
       if (!isPortrait || reduce) return;
-      const r = card.getBoundingClientRect();
-      const px = Math.max(0, Math.min(1, (e.clientX-r.left)/r.width));
-      const py = Math.max(0, Math.min(1, (e.clientY-r.top)/r.height));
+      const pt = getPoint(e);
+      if (!pt || pt.clientX == null) return;
+      const r = mediaEl.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const px = Math.max(0, Math.min(1, (pt.clientX-r.left)/r.width));
+      const py = Math.max(0, Math.min(1, (pt.clientY-r.top)/r.height));
       card.classList.add("portrait-active");
+      if (holoEl) {
+        holoEl.style.setProperty("opacity", "0.94", "important");
+        holoEl.style.setProperty("filter", "saturate(1.24) contrast(1.12) brightness(1.06)", "important");
+      }
       card.style.setProperty("--aura-x",(px*100).toFixed(2)+"%");
       card.style.setProperty("--aura-y",(py*100).toFixed(2)+"%");
+      card.style.setProperty("--holo-size",size+"px");
       setHoloTarget(px*100,py*100);
       card.style.setProperty("--portrait-img-x",((px-.5)*10).toFixed(2)+"px");
       card.style.setProperty("--portrait-img-y",((py-.5)*10).toFixed(2)+"px");
-      card.style.setProperty("--portrait-img-scale","1.12");
+      card.style.setProperty("--portrait-img-scale","1.13");
     };
     const resetPortrait = () => {
       if (!isPortrait) return;
+      cancelAnimationFrame(holoScanRaf);
       card.classList.remove("portrait-active");
       card.classList.remove("is-pressed");
+      if (holoEl) {
+        holoEl.style.removeProperty("opacity");
+        holoEl.style.removeProperty("filter");
+      }
       card.style.setProperty("--aura-x","50%");
       card.style.setProperty("--aura-y","50%");
+      card.style.setProperty("--holo-size","76px");
       setHoloTarget(50,50);
       card.style.setProperty("--portrait-img-x","0px");
       card.style.setProperty("--portrait-img-y","0px");
       card.style.setProperty("--portrait-img-scale","1.09");
     };
+    const runTapHoloScan = e => {
+      if (!isPortrait || reduce) return;
+      clearTimeout(portraitTimer);
+      cancelAnimationFrame(holoScanRaf);
+      card.classList.add("is-pressed","portrait-active");
+      setPortraitAura(e, 165);
+      const t0 = performance.now();
+      const stepScan = now => {
+        const p = Math.min(1, (now - t0) / 880);
+        const sx = 50 + Math.sin(p * Math.PI * 2) * 20;
+        const sy = 44 + Math.cos(p * Math.PI * 1.5) * 12;
+        card.style.setProperty("--aura-x",sx.toFixed(1)+"%");
+        card.style.setProperty("--aura-y",sy.toFixed(1)+"%");
+        setHoloTarget(sx, sy);
+        if (p < 1 && card.classList.contains("is-pressed")) {
+          holoScanRaf = requestAnimationFrame(stepScan);
+        }
+      };
+      holoScanRaf = requestAnimationFrame(stepScan);
+      portraitTimer = setTimeout(resetPortrait, 2400);
+    };
     card.addEventListener("pointermove", e => {
       if (reduce) return;
-      const r = card.getBoundingClientRect();
+      const r = mediaEl.getBoundingClientRect();
       const x = (e.clientX-r.left)/r.width-.5;
       const y = (e.clientY-r.top)/r.height-.5;
-      setPortraitAura(e);
+      setPortraitAura(e, 118);
       if (innerWidth < 641 || e.pointerType === "touch") return;
       card.style.transform =
         `perspective(1100px) rotateX(${(-y*3.8).toFixed(2)}deg) rotateY(${(x*5.2).toFixed(2)}deg) translateY(-2px)`;
     });
-    card.addEventListener("pointerenter", () => {
-      if (isPortrait && !reduce) {
-        card.classList.add("portrait-active");
-      }
+    mediaEl.addEventListener("pointerenter", e => {
+      if (isPortrait && !reduce) setPortraitAura(e, 118);
     });
-    card.addEventListener("pointerdown", e => {
-      if (!isPortrait || reduce) return;
-      clearTimeout(portraitTimer);
-      card.classList.add("is-pressed");
-      setPortraitAura(e);
-      if (innerWidth < 641 || e.pointerType === "touch") {
-        portraitTimer = setTimeout(resetPortrait, 1400);
+    mediaEl.addEventListener("pointerdown", e => {
+      if (isPortrait && !reduce) runTapHoloScan(e);
+    }, {passive:true});
+    mediaEl.addEventListener("touchstart", e => {
+      if (isPortrait && !reduce) runTapHoloScan(e);
+    }, {passive:true});
+    mediaEl.addEventListener("touchmove", e => {
+      if (isPortrait && !reduce) {
+        clearTimeout(portraitTimer);
+        cancelAnimationFrame(holoScanRaf);
+        card.classList.add("is-pressed","portrait-active");
+        setPortraitAura(e, 155);
+        portraitTimer = setTimeout(resetPortrait, 1500);
       }
     }, {passive:true});
     card.addEventListener("pointerleave", () => {
       card.style.transform = "";
-      resetPortrait();
+      if (!card.classList.contains("is-pressed")) resetPortrait();
     });
   });
 
@@ -204,42 +247,125 @@
     el.addEventListener("pointerleave", () => el.style.transform = "");
   });
 
-  // Custom cursor runs only on fine-pointer desktop devices; mobile/touch uses native pointers.
+  // Robot cursor + subtle smoke plume (active on both desktop and mobile, suppressed over profile portrait).
   const finePointer = matchMedia("(pointer: fine) and (hover: hover)").matches;
   const cursor = document.querySelector(".cursor");
   const dot = document.querySelector(".cursor-dot");
   const trail = document.querySelector(".cursor-trail");
+  const smokeLayer = document.querySelector(".cursor-smoke-layer");
+  const portraitMediaEls = [...document.querySelectorAll(".portrait-media, .portrait-card")];
+
+  const smokePool = [];
+  let smokeIdx = 0;
+  let lastSmokeAt = 0;
+  let lastSmokeX = -999;
+  let lastSmokeY = -999;
+  if (smokeLayer && !reduce) {
+    for (let i = 0; i < 14; i++) {
+      const puff = document.createElement("span");
+      puff.className = "cursor-smoke-puff";
+      smokeLayer.appendChild(puff);
+      smokePool.push(puff);
+    }
+  }
+
+  const isOverPortrait = (x, y, target) => {
+    if (target?.closest?.(".portrait-card, .portrait-media")) return true;
+    if (x == null || y == null) return false;
+    return portraitMediaEls.some(el => {
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && x >= r.left - 4 && x <= r.right + 4 && y >= r.top - 4 && y <= r.bottom + 4;
+    });
+  };
+
+  const clearSmoke = () => {
+    smokePool.forEach(p => p.classList.remove("is-active"));
+  };
+
+  const emitSmoke = (x, y) => {
+    if (reduce || !smokePool.length || body.classList.contains("profile-cursor-safe")) return;
+    const now = performance.now();
+    const dist = Math.hypot(x - lastSmokeX, y - lastSmokeY);
+    if (now - lastSmokeAt < 46 || dist < 10) return;
+    lastSmokeAt = now;
+    lastSmokeX = x;
+    lastSmokeY = y;
+    const puff = smokePool[smokeIdx++ % smokePool.length];
+    puff.classList.remove("is-active");
+    puff.style.left = x.toFixed(1) + "px";
+    puff.style.top = (y + 13).toFixed(1) + "px";
+    puff.style.setProperty("--dx", ((Math.random() - .5) * 18).toFixed(1) + "px");
+    puff.style.setProperty("--dy", (10 + Math.random() * 14).toFixed(1) + "px");
+    void puff.offsetWidth;
+    puff.classList.add("is-active");
+  };
+
   let cx=innerWidth/2, cy=innerHeight/2, tx=cx, ty=cy, gx=cx, gy=cy;
-  let lastX=tx, lastY=ty, cursorMoveTimer=0;
+  let lastX=tx, lastY=ty, cursorMoveTimer=0, touchCursorTimer=0;
   let lastCursorFrame=performance.now();
 
-  if (finePointer) {
-    addEventListener("pointermove", e => {
-      if (e.pointerType !== "mouse") return;
-      tx=e.clientX; ty=e.clientY;
-      const dx = tx-lastX;
-      const dy = ty-lastY;
-      const speed = Math.min(34, Math.hypot(dx,dy));
-      const angle = Math.atan2(dy,dx) * 180 / Math.PI;
-      lastX = tx;
-      lastY = ty;
-      document.documentElement.style.setProperty("--mx",e.clientX+"px");
-      document.documentElement.style.setProperty("--my",e.clientY+"px");
-      document.documentElement.style.setProperty("--cursor-speed",speed.toFixed(2)+"px");
-      document.documentElement.style.setProperty("--cursor-angle",angle.toFixed(2)+"deg");
+  const updatePointerState = (x, y, target, isTouch = false) => {
+    if (x == null || y == null) return;
+    tx = x;
+    ty = y;
+    const dx = tx - lastX;
+    const dy = ty - lastY;
+    const speed = Math.min(34, Math.hypot(dx, dy));
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    lastX = tx;
+    lastY = ty;
+    document.documentElement.style.setProperty("--mx", x + "px");
+    document.documentElement.style.setProperty("--my", y + "px");
+    document.documentElement.style.setProperty("--cursor-speed", speed.toFixed(2) + "px");
+    document.documentElement.style.setProperty("--cursor-angle", angle.toFixed(2) + "deg");
+    const safe = isOverPortrait(x, y, target);
+    body.classList.toggle("profile-cursor-safe", safe);
+    if (safe) {
+      clearSmoke();
+    } else {
+      emitSmoke(x, y);
+    }
+    if (dot) dot.style.transform = `translate3d(${tx}px,${ty}px,0) translate(-50%,-50%)`;
+    if (isTouch) {
+      cx = tx;
+      cy = ty;
+      if (cursor) cursor.style.transform = `translate3d(${cx}px,${cy}px,0) translate(-50%,-50%)`;
+      clearTimeout(touchCursorTimer);
+      body.classList.add("touch-cursor-active");
+      touchCursorTimer = setTimeout(() => body.classList.remove("touch-cursor-active"), 1050);
+    } else {
       body.classList.add("cursor-moving");
       clearTimeout(cursorMoveTimer);
       cursorMoveTimer = setTimeout(() => body.classList.remove("cursor-moving"), 140);
-      if (dot) dot.style.transform=`translate3d(${tx}px,${ty}px,0) translate(-50%,-50%)`;
-    }, {passive:true});
+    }
+  };
 
-    addEventListener("pointerdown", e => { if (e.pointerType === "mouse") body.classList.add("cursor-down"); }, {passive:true});
-    addEventListener("pointerup", () => body.classList.remove("cursor-down"), {passive:true});
-    addEventListener("pointercancel", () => body.classList.remove("cursor-down"), {passive:true});
-  }
+  addEventListener("pointermove", e => {
+    if (e.pointerType === "mouse") {
+      updatePointerState(e.clientX, e.clientY, e.target, false);
+    }
+  }, {passive:true});
+
+  addEventListener("pointerdown", e => {
+    body.classList.add("cursor-down");
+    if (e.pointerType !== "mouse") {
+      updatePointerState(e.clientX, e.clientY, e.target, true);
+    }
+  }, {passive:true});
+  addEventListener("pointerup", () => body.classList.remove("cursor-down"), {passive:true});
+  addEventListener("pointercancel", () => body.classList.remove("cursor-down"), {passive:true});
+
+  addEventListener("touchstart", e => {
+    const pt = e.touches?.[0];
+    if (pt) updatePointerState(pt.clientX, pt.clientY, e.target, true);
+  }, {passive:true});
+  addEventListener("touchmove", e => {
+    const pt = e.touches?.[0];
+    if (pt) updatePointerState(pt.clientX, pt.clientY, e.target, true);
+  }, {passive:true});
 
   const interactiveItems = document.querySelectorAll(
-    "a,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.clarity-callout,.skill-pill,.social-orb,.btn,.tilt"
+    "a,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.brand,.topic-chip,.portrait-bottom,.tilt"
   );
 
   interactiveItems.forEach(el => {
@@ -247,8 +373,8 @@
     el.addEventListener("pointerleave",()=>body.classList.remove("hovering"));
   });
 
-  document.querySelectorAll(".portrait-card").forEach(el => {
-    el.addEventListener("pointerenter",()=>body.classList.add("profile-cursor-safe"));
+  document.querySelectorAll(".portrait-card,.portrait-media").forEach(el => {
+    el.addEventListener("pointerenter",()=>{body.classList.add("profile-cursor-safe");clearSmoke();});
     el.addEventListener("pointerleave",()=>body.classList.remove("profile-cursor-safe"));
     el.addEventListener("pointercancel",()=>body.classList.remove("profile-cursor-safe"));
   });
@@ -267,11 +393,11 @@
     el.style.setProperty("--motion-y", (ny * 9).toFixed(2) + "px");
   };
 
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.clarity-callout,.skill-pill,.social-orb,.btn").forEach(el => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
     let pressTimer = 0;
     const delayedClear = () => {
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => el.classList.remove("is-pressed"), 620);
+      pressTimer = setTimeout(() => el.classList.remove("is-pressed"), 720);
     };
     const clearPressed = e => {
       if (e?.pointerType === "touch" || e?.type?.startsWith("touch")) {
@@ -299,7 +425,7 @@
   });
 
   // Spotlight values for cards.
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.clarity-callout,.profile-panel,.social-orb").forEach(card => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.exp-row,.clarity-callout,.profile-panel,.social-orb").forEach(card => {
     card.addEventListener("pointermove", e => {
       setInteractionPoint(card, e);
     });
@@ -323,8 +449,8 @@
     if (finePointer) {
       const dt = Math.min(48, Math.max(16, now-lastCursorFrame));
       lastCursorFrame = now;
-      const ringEase = 1 - Math.pow(.0008, dt / 72);
-      const trailEase = 1 - Math.pow(.002, dt / 110);
+      const ringEase = 1 - Math.pow(.0002, dt / 48);
+      const trailEase = 1 - Math.pow(.001, dt / 95);
       if (cursor) {
         cx += (tx-cx)*ringEase;
         cy += (ty-cy)*ringEase;
@@ -336,8 +462,8 @@
         trail.style.transform=`translate3d(${gx}px,${gy}px,0) translate(-50%,-50%) rotate(var(--cursor-angle,0deg))`;
       }
       const inLab = scrollY < lab.offsetHeight*.92;
-      if (cursor) cursor.style.opacity = inLab ? "0" : ".74";
-      if (dot) dot.style.opacity = inLab ? "0" : ".58";
+      if (cursor) cursor.style.opacity = inLab ? "0" : ".95";
+      if (dot) dot.style.opacity = inLab ? "0" : ".72";
       if (trail) trail.style.opacity = inLab ? "0" : "";
       requestAnimationFrame(frame);
     }
