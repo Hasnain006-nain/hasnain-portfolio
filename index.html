@@ -9,8 +9,8 @@
 <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg?v=hh-cyber-20261120">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles/portfolio.css?v=landscape-v2-20261120">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles/portfolio.css?v=landscape-v3-20261121">
 
 </head>
 <body class="lab-active">
@@ -40,19 +40,19 @@
 
 <nav class="nav" aria-label="Main navigation">
   <a class="brand magnetic" href="#lab" aria-label="Home">
-    <span class="brand-mark" aria-hidden="true"><i></i><b>HH</b></span>
+    <span class="brand-mark" aria-hidden="true"><i></i><b>&lt;HH/&gt;</b></span>
     <span class="brand-copy">
-      <span class="brand-name">Hasnain Haider</span>
-      <span class="brand-tag"><i></i>AI LAB</span>
+      <span class="brand-name"><em>~/</em>Hasnain Haider<u aria-hidden="true"></u></span>
+      <span class="brand-tag"><i></i>git:(main) · AI.LAB</span>
     </span>
   </a>
   <div class="navlinks" id="primary-navigation">
-    <a class="magnetic" href="#about">About</a><a class="magnetic" href="#services">Expertise</a><a class="magnetic" href="#work">Work</a>
-    <a class="magnetic" href="#research">Research</a>
-    <a class="magnetic" href="#experience">Experience</a><a class="magnetic" href="#skills">Stack</a>
-    <a class="magnetic" href="#contact">Contact</a>
+    <a class="magnetic" href="#about" data-idx="01">About</a><a class="magnetic" href="#services" data-idx="02">Expertise</a><a class="magnetic" href="#work" data-idx="03">Work</a>
+    <a class="magnetic" href="#research" data-idx="04">Research</a>
+    <a class="magnetic" href="#experience" data-idx="05">Experience</a><a class="magnetic" href="#skills" data-idx="06">Stack</a>
+    <a class="magnetic" href="#contact" data-idx="07">Contact</a>
   </div>
-  <a class="navcta magnetic" href="#contact">Let's talk ↗</a>
+  <a class="navcta magnetic" href="#contact"><span class="cta-dot" aria-hidden="true"></span><span class="cta-prompt" aria-hidden="true">&gt;_</span><span>Let's talk</span><span class="cta-arrow" aria-hidden="true">↗</span></a>
   <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation">
     <span></span><span></span><span></span>
   </button>
@@ -489,7 +489,52 @@
         <h2>Research in practice.</h2>
         <p>From university research and teaching support to independent projects, analytics work and applied AI systems.</p>
       </div>
-      <div class="exp-list">
+      <div class="exp-list exp-tree">
+        <svg class="exp-tree-svg" viewBox="0 0 240 960" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="treeTrunkGrad" x1="120" y1="955" x2="120" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#33b699" stop-opacity=".42"/>
+              <stop offset="45%" stop-color="#61f6d6" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#9b7bff" stop-opacity=".9"/>
+            </linearGradient>
+            <linearGradient id="branchLeftGrad" x1="120" y1="0" x2="8" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#61f6d6" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#6ea8ff" stop-opacity=".55"/>
+            </linearGradient>
+            <linearGradient id="branchRightGrad" x1="120" y1="0" x2="232" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#61f6d6" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#9b7bff" stop-opacity=".6"/>
+            </linearGradient>
+          </defs>
+          <!-- Sculpted Roots -->
+          <path d="M56 952 Q98 920 120 882 M184 952 Q142 920 120 882 M84 955 Q110 928 120 894 M156 955 Q130 928 120 894" fill="none" stroke="url(#treeTrunkGrad)" stroke-width="2.4" stroke-linecap="round"/>
+          <!-- Main Organic Multi-Strand Trunk -->
+          <path d="M120 946 C112 785, 130 615, 118 450 C108 295, 128 165, 120 44" fill="none" stroke="url(#treeTrunkGrad)" stroke-width="5.2" stroke-linecap="round"/>
+          <path class="tree-sap" d="M120 946 C112 785, 130 615, 118 450 C108 295, 128 165, 120 44" fill="none" stroke="#d8fff7" stroke-width="2" stroke-linecap="round"/>
+          <!-- Crown Canopy Sprigs -->
+          <path d="M120 44 C108 24, 90 14, 72 18 M120 44 C132 24, 150 14, 168 18 M120 44 L120 8" fill="none" stroke="#61f6d6" stroke-width="2.2" stroke-linecap="round" opacity=".82"/>
+          <ellipse cx="120" cy="8" rx="6" ry="9" fill="#61f6d6" opacity=".65"/>
+          <ellipse cx="70" cy="18" rx="8" ry="4.5" transform="rotate(-24 70 18)" fill="#6ea8ff" opacity=".55"/>
+          <ellipse cx="170" cy="18" rx="8" ry="4.5" transform="rotate(24 170 18)" fill="#9b7bff" opacity=".55"/>
+          <!-- 8 Curved Branches Connecting to Leaf Rows (4 levels) -->
+          <path class="tree-branch" d="M119 138 C86 130, 48 112, 6 106" fill="none" stroke="url(#branchLeftGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M121 168 C154 160, 192 142, 234 136" fill="none" stroke="url(#branchRightGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M118 365 C84 356, 46 338, 6 332" fill="none" stroke="url(#branchLeftGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M120 395 C154 386, 192 368, 234 362" fill="none" stroke="url(#branchRightGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M119 595 C84 586, 46 568, 6 562" fill="none" stroke="url(#branchLeftGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M121 625 C154 616, 192 598, 234 592" fill="none" stroke="url(#branchRightGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M118 820 C84 812, 46 794, 6 788" fill="none" stroke="url(#branchLeftGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <path class="tree-branch" d="M121 850 C154 842, 192 824, 234 818" fill="none" stroke="url(#branchRightGrad)" stroke-width="2.6" stroke-linecap="round"/>
+          <!-- Animated Sap Nodes along Trunk -->
+          <circle class="tree-node" cx="119" cy="138" r="4.5"/>
+          <circle class="tree-node" cx="121" cy="168" r="4.5"/>
+          <circle class="tree-node" cx="118" cy="365" r="4.5"/>
+          <circle class="tree-node" cx="120" cy="395" r="4.5"/>
+          <circle class="tree-node" cx="119" cy="595" r="4.5"/>
+          <circle class="tree-node" cx="121" cy="625" r="4.5"/>
+          <circle class="tree-node" cx="118" cy="820" r="4.5"/>
+          <circle class="tree-node" cx="121" cy="850" r="4.5"/>
+        </svg>
         <div class="exp-row" data-reveal><div class="date">2026 — Present</div><div class="exp-content"><span class="exp-kind">Current role</span><h3>Research Assistant · Albukhary International University</h3><p>Supporting research at the intersection of machine learning, agentic AI, interpretability, experimental design and validation.</p></div><div class="where">Malaysia</div></div>
         <div class="exp-row" data-reveal><div class="date">6 months</div><div class="exp-content"><span class="exp-kind">Teaching support</span><h3>Cryptography Lab Assistant</h3><p>Assisted with practical sessions for the Cryptography course taught by Prof. Dr. T. S. Khalid Hussian.</p></div><div class="where">Academic</div></div>
         <div class="exp-row" data-reveal><div class="date">2025 — 2026</div><div class="exp-content"><span class="exp-kind">Independent research</span><h3>Lead Researcher · LC-ORF Fraud-Model Evaluation</h3><p>Developed a leakage-conscious audit protocol comparing five fraud-classifier families across three transaction datasets, 75 frozen dataset-model-seed units and six operational robustness axes.</p></div><div class="where">Independent</div></div>
@@ -615,14 +660,63 @@
         <div class="details-column" data-reveal>
           <div class="details-column-head"><h3>Certifications</h3><span>02 / 02</span></div>
           <div class="cert-grid">
-            <a class="cert" href="https://www.coursera.org/account/accomplishments/specialization/7NC3SEE23L6H" target="_blank" rel="noreferrer"><strong>Machine Learning Specialisation</strong><span>Stanford University</span><i aria-hidden="true">↗</i></a>
-            <a class="cert" href="https://www.coursera.org/account/accomplishments/verify/R7DSCTX7AF4G" target="_blank" rel="noreferrer"><strong>Python for Data Science, AI & Development</strong><span>IBM</span><i aria-hidden="true">↗</i></a>
-            <a class="cert" href="https://www.coursera.org/account/accomplishments/verify/948WMRLFS36W" target="_blank" rel="noreferrer"><strong>Introduction to Data Analytics</strong><span>Meta</span><i aria-hidden="true">↗</i></a>
-            <a class="cert" href="https://www.coursera.org/account/accomplishments/verify/ZJQ3MY9Q5ENS" target="_blank" rel="noreferrer"><strong>Crash Course on Python</strong><span>Google</span><i aria-hidden="true">↗</i></a>
-            <a class="cert" href="https://www.mygreatlearning.com/certificate/VKTMYSGU" target="_blank" rel="noreferrer"><strong>Artificial Intelligence Fundamentals</strong><span>Great Learning</span><i aria-hidden="true">↗</i></a>
-            <a class="cert" href="https://www.theforage.com/completion-certificates/9PBTqmSxAf6zZTseP/io9DzWKe3PTsiS6GG_9PBTqmSxAf6zZTseP_68c19fbbc2f8cb24f73ba7c7_1760775334480_completion_certificate.pdf" target="_blank" rel="noreferrer"><strong>Deloitte Australia - Data Analytics Job Simulation</strong><span>Forage</span><i aria-hidden="true">↗</i></a>
+            <a class="cert cert-stanford" href="https://www.coursera.org/account/accomplishments/specialization/7NC3SEE23L6H" target="_blank" rel="noreferrer">
+              <span class="cert-logo" aria-hidden="true">
+                <i class="seal-orbit"></i>
+                <svg viewBox="0 0 40 40" role="img" aria-label="Stanford University"><rect x="3" y="3" width="34" height="34" rx="10" fill="#8C1515"/><path d="M25.5 14.5C25.5 12 23.2 10.5 20 10.5C16.8 10.5 14.6 12.1 14.6 14.6C14.6 17.1 16.9 18.2 20.3 19C24 19.9 26.2 21.1 26.2 24.4C26.2 27.6 23.5 29.6 19.9 29.6C16.4 29.6 13.8 27.9 13.4 25" fill="none" stroke="#fff" stroke-width="3.1" stroke-linecap="round"/><path d="M20 7.5L17.2 14.2H19.1L16.3 20.5H19V25.5H21V20.5H23.7L20.9 14.2H22.8Z" fill="#2E9E4F" opacity=".92"/></svg>
+              </span>
+              <span class="cert-meta"><strong>Machine Learning Specialisation</strong><span>Stanford University</span></span>
+              <i aria-hidden="true">↗</i>
+            </a>
+            <a class="cert cert-ibm" href="https://www.coursera.org/account/accomplishments/verify/R7DSCTX7AF4G" target="_blank" rel="noreferrer">
+              <span class="cert-logo" aria-hidden="true">
+                <i class="seal-orbit"></i>
+                <svg viewBox="0 0 40 40" role="img" aria-label="IBM"><rect x="3" y="3" width="34" height="34" rx="10" fill="#07192E"/><g stroke="#38BDF8" stroke-width="1.65" stroke-linecap="square"><line x1="7" y1="13" x2="11.5" y2="13"/><line x1="7" y1="16" x2="11.5" y2="16"/><line x1="7.8" y1="19" x2="10.7" y2="19"/><line x1="7.8" y1="22" x2="10.7" y2="22"/><line x1="7" y1="25" x2="11.5" y2="25"/><line x1="7" y1="28" x2="11.5" y2="28"/><line x1="13.5" y1="13" x2="21.5" y2="13"/><line x1="13.5" y1="16" x2="22.5" y2="16"/><line x1="14.2" y1="19" x2="21.5" y2="19"/><line x1="14.2" y1="22" x2="22.5" y2="22"/><line x1="13.5" y1="25" x2="22.2" y2="25"/><line x1="13.5" y1="28" x2="21.2" y2="28"/><line x1="24.5" y1="13" x2="33" y2="13"/><line x1="24.5" y1="16" x2="33" y2="16"/><line x1="25.2" y1="19" x2="32.3" y2="19"/><line x1="25.2" y1="22" x2="32.3" y2="22"/><line x1="24.5" y1="25" x2="33" y2="25"/><line x1="24.5" y1="28" x2="33" y2="28"/></g></svg>
+              </span>
+              <span class="cert-meta"><strong>Python for Data Science, AI &amp; Development</strong><span>IBM</span></span>
+              <i aria-hidden="true">↗</i>
+            </a>
+            <a class="cert cert-meta-org" href="https://www.coursera.org/account/accomplishments/verify/948WMRLFS36W" target="_blank" rel="noreferrer">
+              <span class="cert-logo" aria-hidden="true">
+                <i class="seal-orbit"></i>
+                <svg viewBox="0 0 40 40" role="img" aria-label="Meta"><rect x="3" y="3" width="34" height="34" rx="10" fill="#091B36"/><path d="M11.8 25.8C8.9 25.8 7.5 23.1 7.5 20C7.5 16.2 10 13.5 12.9 13.5C15.5 13.5 17.6 15.8 20 19.6C22.4 15.8 24.5 13.5 27.1 13.5C30 13.5 32.5 16.2 32.5 20C32.5 23.1 31.1 25.8 28.2 25.8C25.5 25.8 23.5 23.4 20.6 18.8L19.4 18.8C16.5 23.4 14.5 25.8 11.8 25.8Z" fill="none" stroke="#0081FB" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="cert-meta"><strong>Introduction to Data Analytics</strong><span>Meta</span></span>
+              <i aria-hidden="true">↗</i>
+            </a>
+            <a class="cert cert-google" href="https://www.coursera.org/account/accomplishments/verify/ZJQ3MY9Q5ENS" target="_blank" rel="noreferrer">
+              <span class="cert-logo" aria-hidden="true">
+                <i class="seal-orbit"></i>
+                <svg viewBox="0 0 40 40" role="img" aria-label="Google"><rect x="3" y="3" width="34" height="34" rx="10" fill="#101827"/><path d="M30.6 20.2C30.6 19.4 30.5 18.7 30.4 18H20.2V22.3H26.1C25.8 23.7 25 24.9 23.8 25.7V28.5H27.3C29.4 26.6 30.6 23.7 30.6 20.2Z" fill="#4285F4"/><path d="M20.2 30.8C23.1 30.8 25.6 29.8 27.3 28.5L23.8 25.7C22.8 26.4 21.6 26.8 20.2 26.8C17.4 26.8 15 24.9 14.2 22.3H10.5V25.2C12.3 28.6 15.9 30.8 20.2 30.8Z" fill="#34A853"/><path d="M14.2 22.3C14 21.6 13.8 20.8 13.8 20C13.8 19.2 14 18.4 14.2 17.7V14.8H10.5C9.8 16.4 9.4 18.1 9.4 20C9.4 21.9 9.8 23.6 10.5 25.2L14.2 22.3Z" fill="#FBBC05"/><path d="M20.2 13.2C21.8 13.2 23.2 13.7 24.4 14.8L27.5 11.7C25.6 10 23.1 9 20.2 9C15.9 9 12.3 11.2 10.5 14.8L14.2 17.7C15 15.1 17.4 13.2 20.2 13.2Z" fill="#EA4335"/></svg>
+              </span>
+              <span class="cert-meta"><strong>Crash Course on Python</strong><span>Google</span></span>
+              <i aria-hidden="true">↗</i>
+            </a>
+            <a class="cert cert-gl" href="https://www.mygreatlearning.com/certificate/VKTMYSGU" target="_blank" rel="noreferrer">
+              <span class="cert-logo" aria-hidden="true">
+                <i class="seal-orbit"></i>
+                <svg viewBox="0 0 40 40" role="img" aria-label="Great Learning"><rect x="3" y="3" width="34" height="34" rx="10" fill="#0B1E38"/><path d="M17.5 15.2A5.8 5.8 0 1 0 17.5 24.8V20.5H13.8" fill="none" stroke="#38BDF8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M22.5 14V25.5H28.5" fill="none" stroke="#61F6D6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="cert-meta"><strong>Artificial Intelligence Fundamentals</strong><span>Great Learning</span></span>
+              <i aria-hidden="true">↗</i>
+            </a>
+            <a class="cert cert-forage" href="https://www.theforage.com/completion-certificates/9PBTqmSxAf6zZTseP/io9DzWKe3PTsiS6GG_9PBTqmSxAf6zZTseP_68c19fbbc2f8cb24f73ba7c7_1760775334480_completion_certificate.pdf" target="_blank" rel="noreferrer">
+              <span class="cert-logo" aria-hidden="true">
+                <i class="seal-orbit"></i>
+                <svg viewBox="0 0 40 40" role="img" aria-label="Deloitte &amp; Forage"><rect x="3" y="3" width="34" height="34" rx="10" fill="#0D221E"/><path d="M11 13H17.2C21.2 13 23.6 15.6 23.6 20C23.6 24.4 21.2 27 17.2 27H11Z" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linejoin="round"/><circle cx="28" cy="24.5" r="3" fill="#86BC25"/></svg>
+              </span>
+              <span class="cert-meta"><strong>Deloitte Australia - Data Analytics Job Simulation</strong><span>Forage</span></span>
+              <i aria-hidden="true">↗</i>
+            </a>
             <div class="cert cert-center cert-saylor">
-              <a class="cert-main" href="https://learn.saylor.org/pluginfile.php/1/tool_certificate/issues/1791630232/4184421370HH.pdf" target="_blank" rel="noreferrer"><strong>Introduction to Modern Database Systems</strong><span>Saylor Academy · CS403</span><i aria-hidden="true">↗</i></a>
+              <a class="cert-main" href="https://learn.saylor.org/pluginfile.php/1/tool_certificate/issues/1791630232/4184421370HH.pdf" target="_blank" rel="noreferrer">
+                <span class="cert-logo" aria-hidden="true">
+                  <i class="seal-orbit"></i>
+                  <svg viewBox="0 0 40 40" role="img" aria-label="Saylor Academy"><rect x="3" y="3" width="34" height="34" rx="10" fill="#161D2F"/><path d="M20 8.5L29 12.2V19.6C29 25.1 25.1 29.7 20 31.4C14.9 29.7 11 25.1 11 19.6V12.2Z" fill="none" stroke="#FBBF24" stroke-width="2.2"/><path d="M23.2 15.8C23.2 14.3 21.8 13.4 20 13.4C18.2 13.4 16.8 14.3 16.8 15.8C16.8 17.5 18.7 18 20.4 18.5C22.2 19 23.6 19.8 23.6 21.6C23.6 23.4 22.1 24.5 20 24.5C17.9 24.5 16.5 23.5 16.2 22.1" fill="none" stroke="#61F6D6" stroke-width="2.2" stroke-linecap="round"/></svg>
+                </span>
+                <span class="cert-meta"><strong>Introduction to Modern Database Systems</strong><span>Saylor Academy · CS403</span></span>
+                <i aria-hidden="true">↗</i>
+              </a>
               <a class="cert-extra" href="https://learn.saylor.org/mod/page/view.php?id=81486" target="_blank" rel="noreferrer">Syllabus ↗</a>
             </div>
           </div>
@@ -721,6 +815,6 @@
   <script src="./webgl-fluid.js?v=fluid-touch-scroll-20261120"></script>
 
   <!-- Portfolio interactions -->
-<script src="./scripts/portfolio.js?v=landscape-v2-20261120"></script>
+<script src="./scripts/portfolio.js?v=landscape-v3-20261121"></script>
 </body>
 </html>

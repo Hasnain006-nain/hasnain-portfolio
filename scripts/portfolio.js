@@ -403,7 +403,7 @@
       el?.addEventListener("input", () => el.classList.remove("is-invalid"));
     });
 
-    const showStatus = (kind, text, fallbackHref = "") => {
+    const showStatus = (kind, text, fallbackHref = "", gmailHref = "", fallbackLabel = "Open in email app ↗") => {
       if (!statusBox) return;
       statusBox.hidden = false;
       statusBox.className = `form-status ${kind === "success" ? "is-success" : "is-error"}`;
@@ -411,13 +411,52 @@
       const msgSpan = document.createElement("span");
       msgSpan.textContent = text;
       statusBox.appendChild(msgSpan);
+      if (gmailHref) {
+        const gLink = document.createElement("a");
+        gLink.className = "form-fallback-link";
+        gLink.href = gmailHref;
+        gLink.target = "_blank";
+        gLink.rel = "noopener noreferrer";
+        gLink.textContent = "Send via Gmail ↗";
+        statusBox.appendChild(gLink);
+      }
       if (fallbackHref) {
         const link = document.createElement("a");
         link.className = "form-fallback-link";
         link.href = fallbackHref;
-        link.textContent = "Open in email app ↗";
+        link.textContent = fallbackLabel;
         statusBox.appendChild(link);
       }
+    };
+
+    const relayThroughBrowser = async (toEmail, payload) => {
+      const target = toEmail || "hhnain1006@gmail.com";
+      const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(target)}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          name: payload.name,
+          email: payload.email,
+          _replyto: payload.email,
+          topic: payload.topic,
+          _subject: `[Portfolio · ${payload.topic}] ${payload.subject} — ${payload.name}`,
+          message: payload.message,
+          _template: "box",
+          _captcha: "false"
+        })
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || (json?.success !== "true" && json?.success !== true)) {
+        const msg = String(json?.message || "");
+        const needsActivation = /activate|confirm/i.test(msg);
+        const err = new Error(msg || "Direct relay failed");
+        err.needsActivation = needsActivation;
+        throw err;
+      }
+      return json;
     };
 
     contactForm.addEventListener("submit", async event => {
@@ -457,16 +496,25 @@
         return;
       }
 
+      const fullSubject = `[${topic}] ${subject} — ${name}`;
+      const fullBody = `Name: ${name}\nEmail: ${email}\nTopic: ${topic}\n\n${message}`;
       const mailtoFallback =
         "mailto:hhnain1006@gmail.com?subject=" +
-        encodeURIComponent(`[${topic}] ${subject}`) +
+        encodeURIComponent(fullSubject) +
         "&body=" +
-        encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+        encodeURIComponent(fullBody);
+      const gmailCompose =
+        "https://mail.google.com/mail/?view=cm&fs=1&to=hhnain1006@gmail.com&su=" +
+        encodeURIComponent(fullSubject) +
+        "&body=" +
+        encodeURIComponent(fullBody);
 
       if (submitBtn) submitBtn.disabled = true;
       submitBtn?.classList.add("is-loading");
       if (submitLabel) submitLabel.textContent = "Sending...";
       if (statusBox) statusBox.hidden = true;
+
+      const started = performance.now();
 
       try {
         const response = await fetch("/api/contact", {
@@ -476,26 +524,49 @@
         });
         const data = await response.json().catch(() => ({}));
 
-        if (!response.ok || !data?.ok) {
-          if (data?.field === "name") nameInput?.classList.add("is-invalid");
-          if (data?.field === "email") emailInput?.classList.add("is-invalid");
-          if (data?.field === "subject") subjectInput?.classList.add("is-invalid");
-          if (data?.field === "message") messageInput?.classList.add("is-invalid");
-          showStatus(
-            "error",
-            data?.error || "Could not deliver right now.",
-            response.status >= 500 || response.status === 404 ? mailtoFallback : ""
-          );
+        if (response.ok && data?.ok) {
+          const speedNote = typeof data.latencyMs === "number" ? ` (${data.latencyMs}ms)` : "";
+          showStatus("success", `Message delivered to Hasnain${speedNote}. I'll reply to ${email} soon.`);
+          contactForm.reset();
+          topicChips.forEach((chip, idx) => chip.classList.toggle("is-active", idx === 0));
+          if (topicInput && topicChips[0]) topicInput.value = topicChips[0].dataset.topic || "Research Collaboration";
           return;
         }
 
-        const speedNote = typeof data.latencyMs === "number" ? ` (${data.latencyMs}ms)` : "";
-        showStatus("success", `Message delivered to Hasnain${speedNote}. I'll reply to ${email} soon.`);
-        contactForm.reset();
-        topicChips.forEach((chip, idx) => chip.classList.toggle("is-active", idx === 0));
-        if (topicInput && topicChips[0]) topicInput.value = topicChips[0].dataset.topic || "Research Collaboration";
+        if (response.status >= 400 && response.status < 500 && data?.field) {
+          if (data.field === "name") nameInput?.classList.add("is-invalid");
+          if (data.field === "email") emailInput?.classList.add("is-invalid");
+          if (data.field === "subject") subjectInput?.classList.add("is-invalid");
+          if (data.field === "message") messageInput?.classList.add("is-invalid");
+          showStatus("error", data?.error || "Please check the highlighted field.");
+          return;
+        }
+
+        // Fall back seamlessly to browser FormSubmit relay so Gmail delivery works zero-config.
+        try {
+          await relayThroughBrowser(data?.toEmail || "hhnain1006@gmail.com", { name, email, topic, subject, message });
+          const elapsed = Math.round(performance.now() - started);
+          showStatus("success", `Message sent to Hasnain (${elapsed}ms). I'll reply to ${email} soon.`);
+          contactForm.reset();
+          topicChips.forEach((chip, idx) => chip.classList.toggle("is-active", idx === 0));
+          if (topicInput && topicChips[0]) topicInput.value = topicChips[0].dataset.topic || "Research Collaboration";
+        } catch (relayErr) {
+          const promptText = relayErr?.needsActivation
+            ? "One-time activation link sent to hhnain1006@gmail.com — click Activate once, or send right now via Gmail:"
+            : "Automatic relay blocked in this browser — send in one click:";
+          showStatus("error", promptText, mailtoFallback, gmailCompose, "Email app ↗");
+        }
       } catch {
-        showStatus("error", "Network unavailable. You can still send via email:", mailtoFallback);
+        try {
+          await relayThroughBrowser("hhnain1006@gmail.com", { name, email, topic, subject, message });
+          const elapsed = Math.round(performance.now() - started);
+          showStatus("success", `Message sent to Hasnain (${elapsed}ms). I'll reply to ${email} soon.`);
+          contactForm.reset();
+          topicChips.forEach((chip, idx) => chip.classList.toggle("is-active", idx === 0));
+          if (topicInput && topicChips[0]) topicInput.value = topicChips[0].dataset.topic || "Research Collaboration";
+        } catch {
+          showStatus("error", "Network unavailable — send in one click:", mailtoFallback, gmailCompose, "Email app ↗");
+        }
       } finally {
         if (submitBtn) submitBtn.disabled = false;
         submitBtn?.classList.remove("is-loading");

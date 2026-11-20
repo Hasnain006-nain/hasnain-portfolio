@@ -5185,8 +5185,9 @@
 
 
   /* ==========================================================================
-     FINAL PASS: Stylish Nav, Unobstructed Portrait, Faster Cursor,
-     Compact 2x2 Landscape Sections Across Desktop & Mobile, Cyber Credentials
+     FINAL PASS V3: Developer HUD Nav, Fixed Service & Work Motion Scenes,
+     Alternating Build Spine, Animated Experience Tree, Crest Medallions,
+     Centered Social Orbs & Responsive Landscape Polish
      ========================================================================== */
   section[id]{scroll-margin-top:90px}
   .cursor,.cursor-dot,.cursor-trail{will-change:transform}
@@ -5199,75 +5200,122 @@
     }
   }
 
-  /* --- 1. Stylish Navbar & Hasnain Haider Brand Pill (All Devices) --- */
+  /* --- 1. Developer Command-Deck Navbar & Bespoke Let's talk Trigger --- */
+  @keyframes termBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes radarPing{0%{box-shadow:0 0 0 0 rgba(97,246,214,.55)}70%{box-shadow:0 0 0 7px rgba(97,246,214,0)}100%{box-shadow:0 0 0 0 rgba(97,246,214,0)}}
+  @keyframes navLaser{0%,100%{opacity:.55;transform:scaleX(.86)}50%{opacity:1;transform:scaleX(1)}}
+
   .nav{
-    left:50%;right:auto;top:16px;
+    left:50%;right:auto;top:14px;
     transform:translateX(-50%);
-    width:min(1160px,calc(100% - 40px));
-    padding:8px 10px 8px 14px;
-    border-radius:999px;
-    border:1px solid rgba(110,235,214,.22);
-    background:linear-gradient(135deg,rgba(12,17,29,.86),rgba(7,10,18,.82));
-    box-shadow:0 16px 46px rgba(0,0,0,.36),0 0 28px rgba(97,246,214,.06),inset 0 1px 0 rgba(255,255,255,.12);
+    width:min(1180px,calc(100% - 36px));
+    padding:7px 10px 7px 12px;
+    border-radius:16px;
+    border:1px solid rgba(97,246,214,.22);
+    background:linear-gradient(135deg,rgba(9,14,24,.90),rgba(6,9,16,.88));
+    backdrop-filter:blur(18px);
+    box-shadow:0 18px 46px rgba(0,0,0,.46),0 0 32px rgba(97,246,214,.06),inset 0 1px 0 rgba(255,255,255,.10);
     overflow:visible;
   }
   body.lab-active .nav{transform:translateX(-50%) translateY(-8px)}
   body.portfolio-active .nav{transform:translateX(-50%)}
   .nav::before{
-    content:"";position:absolute;left:12%;right:12%;top:-1px;height:1px;pointer-events:none;
-    background:linear-gradient(90deg,transparent,rgba(97,246,214,.72),rgba(110,168,255,.65),rgba(155,123,255,.58),transparent);
+    content:"";position:absolute;left:10%;right:10%;top:-1px;height:1.5px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(97,246,214,.85),rgba(110,168,255,.75),rgba(155,123,255,.70),transparent);
+    animation:navLaser 4.5s ease-in-out infinite;
   }
   .nav .brand{
     display:inline-flex;align-items:center;gap:10px;min-width:0;
-    padding:3px 10px 3px 3px;border-radius:999px;
-    background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
-    transition:border-color .25s,background .25s;
+    padding:4px 11px 4px 5px;border-radius:11px;
+    background:rgba(13,20,33,.72);border:1px solid rgba(97,246,214,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+    transition:border-color .25s,background .25s,transform .25s;
   }
-  .nav .brand:hover{border-color:rgba(97,246,214,.38);background:rgba(97,246,214,.06)}
+  .nav .brand:hover{border-color:rgba(97,246,214,.46);background:rgba(16,28,42,.88)}
   .nav .brand-mark{
-    position:relative;width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;
-    background:linear-gradient(135deg,rgba(97,246,214,.26),rgba(155,123,255,.32));
+    position:relative;width:40px;height:30px;flex:none;border-radius:8px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#0d1b2a,#080d18);
     border:1px solid rgba(97,246,214,.42);
-    box-shadow:0 0 20px rgba(97,246,214,.18),inset 0 0 14px rgba(255,255,255,.08);
+    box-shadow:0 0 18px rgba(97,246,214,.16),inset 0 0 10px rgba(97,246,214,.08);
   }
   .nav .brand-mark i{
-    position:absolute;inset:-3px;border-radius:50%;pointer-events:none;
-    border:1px dashed rgba(97,246,214,.38);animation:spin 14s linear infinite;
+    position:absolute;inset:-2px;border-radius:10px;pointer-events:none;
+    border:1px dashed rgba(97,246,214,.32);opacity:.7;
   }
   .nav .brand-mark b{
-    font-family:"Space Grotesk";font-size:11px;font-weight:800;letter-spacing:-.02em;
-    color:#e9fffb;line-height:1;
+    font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:800;letter-spacing:-.04em;
+    color:#7ef8e0;line-height:1;
   }
   .nav .brand-copy{
     display:flex!important;align-items:center;gap:8px;min-width:0;
   }
   .nav .brand-name{
-    display:inline-block;
-    font-family:"Space Grotesk","Sora",sans-serif;font-size:14.5px;font-weight:700;letter-spacing:-.02em;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    background:linear-gradient(95deg,#ffffff 8%,#baf9ec 55%,#9ebdff 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
+    display:inline-flex;align-items:center;
+    font-family:"Space Grotesk","JetBrains Mono",sans-serif;font-size:14px;font-weight:700;letter-spacing:-.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#f1f7ff;
+  }
+  .nav .brand-name em{
+    font-family:"JetBrains Mono",monospace;font-style:normal;font-size:11.5px;font-weight:700;
+    color:#61f6d6;margin-right:3px;opacity:.92;
+  }
+  .nav .brand-name u{
+    display:inline-block;width:6px;height:13px;margin-left:5px;border-radius:1px;text-decoration:none;
+    background:#61f6d6;box-shadow:0 0 8px rgba(97,246,214,.75);
+    animation:termBlink 1.05s steps(1,end) infinite;
   }
   .nav .brand-tag{
-    display:inline-flex;align-items:center;gap:4px;
-    padding:3px 7px;border-radius:999px;
-    border:1px solid rgba(97,246,214,.28);background:rgba(97,246,214,.08);
-    color:#8ef4df;font-size:8.5px;font-weight:800;letter-spacing:.10em;line-height:1;white-space:nowrap;
+    display:inline-flex;align-items:center;gap:5px;
+    padding:4px 8px;border-radius:7px;
+    border:1px solid rgba(97,246,214,.24);background:rgba(97,246,214,.07);
+    font-family:"JetBrains Mono",monospace;color:#8ff6e1;font-size:9px;font-weight:700;letter-spacing:.03em;line-height:1;white-space:nowrap;
   }
   .nav .brand-tag i{
     width:5px;height:5px;border-radius:50%;background:#61f6d6;box-shadow:0 0 8px #61f6d6;
   }
+  .navlinks{
+    padding:4px 6px;border-radius:12px;gap:2px;
+    background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);
+  }
   .navlinks a{
-    padding:8px 12px;font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#cfd7e6;
+    padding:7px 10px;border-radius:8px;font-size:12px;font-weight:600;letter-spacing:.01em;color:#c7d2e4;
+    transition:color .2s,background .2s;
+  }
+  .navlinks a::before{
+    content:attr(data-idx) ".";
+    font-family:"JetBrains Mono",monospace;font-size:9.5px;font-weight:700;
+    color:#61f6d6;opacity:.75;margin-right:4px;
+  }
+  .navlinks a:hover,.navlinks a:focus-visible{
+    color:#ffffff;background:rgba(97,246,214,.10);outline:none;
   }
   .navcta{
-    border-radius:999px!important;display:inline-flex!important;align-items:center;gap:5px;
-    padding:9px 15px!important;font-size:12.5px!important;font-weight:800!important;line-height:1!important;
-    background:linear-gradient(135deg,#f8fcff,#dffbf4)!important;color:#081016!important;
-    border:1px solid rgba(97,246,214,.42)!important;
-    box-shadow:0 6px 22px rgba(97,246,214,.18)!important;
-    white-space:nowrap;
+    position:relative;display:inline-flex!important;align-items:center;gap:7px;
+    padding:6px 7px 6px 12px!important;border-radius:11px!important;
+    background:linear-gradient(135deg,#0d1b2c,#11162a)!important;
+    color:#eefaf8!important;font-size:12px!important;font-weight:700!important;line-height:1!important;
+    border:1px solid rgba(97,246,214,.48)!important;
+    box-shadow:0 0 24px rgba(97,246,214,.16),inset 0 1px 0 rgba(255,255,255,.14)!important;
+    white-space:nowrap;transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease!important;
   }
+  .navcta:hover{
+    transform:translateY(-1px);
+    border-color:rgba(97,246,214,.85)!important;
+    box-shadow:0 0 30px rgba(97,246,214,.30),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  }
+  .navcta .cta-dot{
+    width:6px;height:6px;border-radius:50%;background:#61f6d6;flex:none;
+    animation:radarPing 2.2s infinite;
+  }
+  .navcta .cta-prompt{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:800;color:#61f6d6;
+  }
+  .navcta .cta-arrow{
+    display:grid;place-items:center;width:22px;height:22px;border-radius:7px;
+    background:linear-gradient(135deg,#61f6d6,#7cb2ff);color:#04080e;
+    font-size:11px;font-weight:900;line-height:1;
+    transition:transform .22s ease;
+  }
+  .navcta:hover .cta-arrow{transform:translate(1px,-1px)}
 
   /* --- 2. Detached Unobstructed Profile Portrait & Redesigned Hero CTAs (Every Device) --- */
   .wrap{width:min(1120px,calc(100% - 72px));margin:0 auto}
@@ -5351,14 +5399,44 @@
   .services-heading .section-title{font-size:clamp(34px,4.2vw,58px)}
   .services-zone .service-tiles{gap:14px}
   .services-zone .service-tiles > .service-card{
-    min-height:248px;padding:20px 18px 22px;border-radius:22px;
+    min-height:248px;padding:18px 16px 20px;border-radius:22px;
   }
-  .services-zone .service-tiles .service-index{left:16px;top:16px;width:34px;height:34px;font-size:10px}
-  .services-zone .service-tiles .service-visual{width:124px;height:94px;margin:26px auto 16px;border-radius:20px}
+  .services-zone .service-tiles .service-index{left:14px;top:14px;width:32px;height:32px;font-size:10px}
+  /* Fixed 140x108 proportional service animation frames on desktop */
+  .services-zone .service-tiles .service-visual{width:140px;height:108px;margin:20px auto 14px;border-radius:22px}
+  .robot-motion .robot-head{top:19px;width:58px;height:42px;border-radius:15px}
+  .robot-motion .robot-antenna{top:6px;height:15px}
+  .robot-motion .robot-antenna::after{width:8px;height:8px}
+  .robot-motion .robot-eye{top:35px;width:9px;height:9px}
+  .robot-motion .e1{left:49px}.robot-motion .e2{right:49px}
+  .robot-motion .robot-mouth{top:50px;width:22px;height:3.5px}
+  .robot-motion .robot-neck{top:60px;width:15px;height:11px}
+  .robot-motion .robot-body{top:69px;width:68px;height:26px;border-radius:14px 14px 18px 18px}
+  .robot-motion .robot-arm{top:75px;width:20px}
+  .robot-motion .a1{left:19px}.robot-motion .a2{right:19px}
+  .robot-motion .s1{width:78px;height:78px;top:3px}.robot-motion .s2{width:100px;height:100px;top:-8px}
+  .build-motion .stage{left:22px;right:22px;height:19px;border-radius:8px}
+  .build-motion .s1{top:18px}.build-motion .s2{top:44px;left:30px;right:14px}.build-motion .s3{top:70px;left:14px;right:30px}
+  .build-motion .r1{left:38px;top:26px;width:24px}.build-motion .r2{left:62px;top:52px;width:34px}.build-motion .r3{left:34px;top:78px;width:52px}
+  .build-motion .deploy{right:22px;bottom:18px;width:8px;height:8px}
+  .analytics-motion .analytics-panel{left:10px;top:16px;width:58px;height:50px;border-radius:12px;background-size:15px 100%,100% 16px}
+  .analytics-motion .analytics-grid{left:15px;top:50px;width:46px}
+  .analytics-motion .analytics-line{left:16px;top:36px;width:44px;height:23px}
+  .analytics-motion .analytics-point{width:7px;height:7px}
+  .analytics-motion .p1{left:16px;top:51px}.analytics-motion .p2{left:29px;top:40px}.analytics-motion .p3{left:44px;top:44px}.analytics-motion .p4{left:58px;top:31px}
+  .analytics-motion .analytics-kpi{right:11px;height:12px}
+  .analytics-motion .k1{top:17px;width:32px}.analytics-motion .k2{top:34px;width:23px}
+  .analytics-motion .analytics-ring{right:11px;bottom:16px;width:34px;height:34px;border-width:6px}
+  .analytics-motion .analytics-slice{right:25px;bottom:30px;width:7px;height:7px}
+  .agent-motion .hub{width:26px;height:26px;border-radius:10px}
+  .agent-motion .o1{width:78px;height:52px}.agent-motion .o2{width:52px;height:78px}
+  .agent-motion .node{width:9px;height:9px}
+  .agent-motion .n1{left:25px;top:28px}.agent-motion .n2{right:25px;top:27px}.agent-motion .n3{left:32px;bottom:25px}.agent-motion .n4{right:32px;bottom:25px}
+  .agent-motion .command{bottom:14px;width:54px}
   .services-zone .service-tiles h3{font-size:clamp(19px,1.5vw,23px);margin-bottom:8px}
   .services-zone .service-tiles p{font-size:12.5px;line-height:1.48}
 
-  /* Section 03 Selected Work: compact 2x2 + equal-width centered 05 */
+  /* Section 03 Selected Work: compact 2x2 + proportional internal animation scenes */
   .projects{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
   .project{min-height:0;padding:18px 20px;border-radius:22px}
   .project-index{width:34px;height:34px;font-size:10px}
@@ -5370,37 +5448,95 @@
   .badges{margin-top:12px;gap:6px}
   .badge{font-size:10px;padding:6px 9px}
   .project-cta{margin-top:12px;padding:7px 11px;font-size:9.5px}
-  .mock,.project-tinyrag .rag-mock,.project-lcorf .mock,.project-ongoing-research .mock{height:156px;margin-top:14px;border-radius:16px}
+  .mock,.project-tinyrag .rag-mock,.project-lcorf .mock,.project-ongoing-research .mock{height:172px;margin-top:14px;border-radius:16px}
+  .mockbar{height:24px;padding:0 10px}
+  .mockbody,.project-tinyrag .rag-search-scene,.project-lcorf .audit-ledger,.project-ongoing-research .mockbody{inset:24px 0 0}
+  .vision-hud{left:14px;top:9px;font-size:7px;padding:4px 8px}
+  .vision-ring{left:26px;top:28px;width:104px;height:104px}
+  .vision-ring::before{inset:-9px}.vision-ring::after{inset:11px}
+  .vision-crosshair{left:34px;top:34px;width:88px;height:88px}
+  .vision-eye{left:28px;top:52px;width:100px;height:56px}
+  .vision-eye::before{width:42px;height:42px}.vision-eye::after{width:17px;height:17px}
+  .vision-scan{left:26px;top:28px;width:104px}
+  .vision-lines{left:156px;right:18px;top:26px}
+  .vision-wave{left:156px;right:18px;bottom:34px;height:42px}
+  .inference-chip{right:14px;bottom:8px;font-size:7px;padding:4px 8px}
+  .rag-search-scene{padding:8px 14px;gap:6px}
+  .rag-searchbar{flex:0 0 24px}
+  .rag-paper-stack{top:18px;width:min(54%,96px);height:48px}
+  .audit-ledger{padding:8px 14px;gap:6px}
+  .audit-dataset-rail,.audit-heat-column{grid-template-rows:15px repeat(3,minmax(0,1fr));gap:4px}
+  .command-column{top:8px;bottom:8px;width:120px}
+  .command-links{inset:10px 14px}
+  .orchestrator-core{width:136px;height:50px;border-radius:16px}
+  .orchestrator-core i{width:12px;height:12px;margin-top:4px}
+  .orchestrator-core strong{font-size:9px}
+  .orchestrator-core span{font-size:6px;margin-bottom:4px}
+  .operator-node{width:122px;height:32px;padding:4px 8px 4px 28px;border-radius:10px}
+  .operator-node i{left:8px;top:8px;width:10px;height:10px}
+  .operator-node.n1,.operator-node.n4{top:10px}
+  .operator-node.n2,.operator-node.n5{top:58px;transform:none}
+  .operator-node.n3,.operator-node.n6{top:auto;bottom:10px}
+  .body-scan-svg{width:min(44%,144px);height:calc(100% - 12px)}
+  .scan-side-mark.left{left:calc(50% - 88px)}.scan-side-mark.right{right:calc(50% - 88px)}
+  .label-brain,.label-abdomen{left:calc(50% - 156px)}
+  .label-thorax,.label-femur{right:calc(50% - 156px)}
   .project-ongoing-research{
     grid-column:1 / -1;width:calc(50% - 8px);justify-self:center;min-height:0;
   }
 
-  /* More applied builds: sleek beveled cyber-cards */
-  .more-title{margin-top:40px;margin-bottom:16px}
+  /* More applied builds: central spine with alternating left/right connector cards */
+  @keyframes spineFlow{0%{top:6%;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:88%;opacity:0}}
+  .more-title{margin-top:42px;margin-bottom:18px}
   .more-title h3{font-size:26px}
-  .more-projects{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .more-projects{
+    position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px 56px;padding:12px 0 34px;
+  }
+  .more-projects::before{
+    content:"";position:absolute;left:50%;top:4px;bottom:4px;width:2px;transform:translateX(-50%);
+    background:linear-gradient(180deg,rgba(97,246,214,.08),rgba(97,246,214,.68) 18%,rgba(110,168,255,.68) 55%,rgba(155,123,255,.60) 85%,rgba(97,246,214,.08));
+    box-shadow:0 0 18px rgba(97,246,214,.25);pointer-events:none;
+  }
+  .more-projects::after{
+    content:"";position:absolute;left:50%;top:8%;width:8px;height:28px;border-radius:999px;transform:translateX(-50%);
+    background:linear-gradient(180deg,transparent,#9efdf0,transparent);box-shadow:0 0 16px #61f6d6;
+    animation:spineFlow 4.2s linear infinite;pointer-events:none;
+  }
   .mini-project{
-    min-height:142px;padding:16px 18px;border-radius:18px;
-    border:1px solid rgba(110,235,214,.16);
+    position:relative;overflow:visible;clip-path:none;min-height:132px;padding:16px 18px;
+    border:1px solid rgba(110,235,214,.20);
     background:
-      radial-gradient(circle at 92% 10%,rgba(97,246,214,.11),transparent 36%),
-      linear-gradient(150deg,rgba(16,22,35,.92),rgba(9,12,20,.88));
-    clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+      radial-gradient(circle at 90% 12%,rgba(97,246,214,.11),transparent 40%),
+      linear-gradient(150deg,rgba(14,21,34,.92),rgba(8,11,19,.90));
+    box-shadow:0 16px 36px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.07);
   }
+  .mini-project:nth-child(odd){border-radius:18px 6px 18px 18px}
+  .mini-project:nth-child(even){border-radius:6px 18px 18px 18px;transform:translateY(22px)}
+  .mini-project:nth-child(odd):hover{transform:translateY(-3px)}
+  .mini-project:nth-child(even):hover{transform:translateY(19px)}
   .mini-project::before{
-    content:"";position:absolute;left:16px;right:34px;top:0;height:1.5px;
-    background:linear-gradient(90deg,rgba(97,246,214,.62),rgba(155,123,255,.35),transparent);
+    content:"";position:absolute;top:24px;width:28px;height:2px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(97,246,214,.75),rgba(110,168,255,.45));
   }
+  .mini-project:nth-child(odd)::before{right:-28px;left:auto;background:linear-gradient(90deg,rgba(110,168,255,.45),rgba(97,246,214,.85))}
+  .mini-project:nth-child(even)::before{left:-28px;right:auto}
+  .mini-project::after{
+    content:"";position:absolute;top:19px;width:10px;height:10px;border-radius:50%;pointer-events:none;
+    background:#61f6d6;border:2px solid #081018;box-shadow:0 0 12px #61f6d6;z-index:2;
+  }
+  .mini-project:nth-child(odd)::after{right:-33px}
+  .mini-project:nth-child(even)::after{left:-33px;background:#9b7bff;box-shadow:0 0 12px #9b7bff}
   .mini-project .n{
     display:inline-block;padding:4px 8px;border-radius:999px;
-    background:rgba(110,168,255,.08);border:1px solid rgba(110,168,255,.20);
-    color:#9fc0ea;font-size:9px;
+    background:rgba(110,168,255,.09);border:1px solid rgba(110,168,255,.24);
+    color:#a7cbff;font-size:9px;
   }
   .mini-project h4{margin:10px 0 6px;font-size:17px}
   .mini-project p{font-size:12px;line-height:1.48;color:#a4b0c2}
   .mini-project b{
     margin-top:10px;padding:4px 8px;border-radius:999px;
-    background:rgba(97,246,214,.09);border:1px solid rgba(97,246,214,.24);
+    background:rgba(97,246,214,.10);border:1px solid rgba(97,246,214,.26);
     color:#8ef4df;font-size:9px;
   }
 
@@ -5420,24 +5556,76 @@
   .metric-card strong{font-size:clamp(28px,3.2vw,40px)}
   .metric-card span{font-size:12px}
 
-  /* Section 05 Experience: compact 2x2 card grid */
+  /* Section 05 Experience: Artistic Animated Botanical Tree with 8 Living Leaves */
+  @keyframes treeSapRise{from{stroke-dashoffset:0}to{stroke-dashoffset:-160}}
+  @keyframes treeNodePulse{0%,100%{opacity:.75;transform:scale(.92)}50%{opacity:1;transform:scale(1.18)}}
+  @keyframes leafSwayLeft{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-.9deg)}}
+  @keyframes leafSwayRight{0%,100%{transform:rotate(0deg)}50%{transform:rotate(.9deg)}}
+
   .experience-layout{grid-template-columns:1fr;gap:22px}
   .experience-heading{position:relative;top:auto;max-width:680px}
   .experience-heading h2{font-size:clamp(34px,4vw,48px);margin:10px 0 10px}
   .experience-heading p{font-size:14px;max-width:600px}
   .experience-heading::after{margin-top:16px}
-  .exp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;border-top:0}
+  .exp-list.exp-tree{
+    position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:20px 104px;padding:34px 0 44px;border-top:0;
+  }
+  .exp-tree-svg{
+    position:absolute;left:50%;top:0;bottom:0;width:116px;height:100%;
+    transform:translateX(-50%);z-index:1;pointer-events:none;overflow:visible;
+  }
+  .exp-tree-svg .tree-sap{stroke-dasharray:26 54;animation:treeSapRise 2.8s linear infinite}
+  .exp-tree-svg .tree-node{fill:#74f7dd;filter:drop-shadow(0 0 8px #61f6d6);transform-box:fill-box;transform-origin:center;animation:treeNodePulse 2.4s ease-in-out infinite}
   .exp-row{
+    position:relative;overflow:visible;z-index:2;
     grid-template-columns:minmax(0,1fr) auto;
     grid-template-areas:"date where" "content content";
-    gap:8px 12px;padding:16px 18px;
-    border:1px solid rgba(255,255,255,.11);border-radius:18px;
-    background:linear-gradient(155deg,rgba(16,22,35,.82),rgba(9,12,20,.78));
+    gap:8px 10px;padding:18px 20px;
+    border:1px solid rgba(97,246,214,.28);
+    background:
+      radial-gradient(circle at 18% 18%,rgba(97,246,214,.16),transparent 48%),
+      repeating-linear-gradient(-38deg,transparent 0 18px,rgba(97,246,214,.03) 18px 19px),
+      linear-gradient(150deg,rgba(12,30,32,.92),rgba(8,14,22,.90));
+    box-shadow:0 18px 42px rgba(0,0,0,.28),inset 0 1px 0 rgba(190,255,244,.12);
+    transition:border-color .28s ease,box-shadow .28s ease,filter .28s ease;
   }
-  .exp-row .date{grid-area:date;font-size:11.5px;color:#8ef4df}
-  .exp-row .where{grid-area:where;font-size:9.5px}
+  .exp-row:nth-of-type(odd){
+    border-radius:42px 8px 40px 10px;transform-origin:right center;
+    animation:leafSwayLeft 5.8s ease-in-out infinite;
+  }
+  .exp-row:nth-of-type(even){
+    border-radius:8px 42px 10px 40px;margin-top:24px;transform-origin:left center;
+    background:
+      radial-gradient(circle at 82% 18%,rgba(155,123,255,.18),transparent 48%),
+      repeating-linear-gradient(38deg,transparent 0 18px,rgba(155,123,255,.032) 18px 19px),
+      linear-gradient(150deg,rgba(15,24,39,.92),rgba(8,12,22,.90));
+    border-color:rgba(130,178,255,.28);
+    animation:leafSwayRight 6.2s ease-in-out -1.5s infinite;
+  }
+  /* Petiole stem linking each leaf smoothly to the tree trunk */
+  .exp-row::before{
+    content:"";position:absolute;top:52px;width:52px;height:2px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(97,246,214,.25),rgba(97,246,214,.9));
+    box-shadow:0 0 10px rgba(97,246,214,.35);
+  }
+  .exp-row:nth-of-type(odd)::before{right:-52px}
+  .exp-row:nth-of-type(even)::before{left:-52px;background:linear-gradient(90deg,rgba(155,123,255,.9),rgba(97,246,214,.25))}
+  /* Leaf central vein glow */
+  .exp-row::after{
+    content:"";position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:99px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(97,246,214,.65),rgba(110,168,255,.35),transparent);opacity:.72;
+  }
+  .exp-row:hover{border-color:rgba(97,246,214,.65);box-shadow:0 22px 48px rgba(0,0,0,.35),0 0 28px rgba(97,246,214,.14);filter:brightness(1.06)}
+  .exp-row .date{
+    grid-area:date;justify-self:start;padding:4px 10px;border-radius:999px;
+    background:rgba(97,246,214,.12);border:1px solid rgba(97,246,214,.34);
+    font-size:10.5px;font-weight:800;color:#9cf9e7;letter-spacing:.03em;white-space:nowrap;
+  }
+  .exp-row:nth-of-type(even) .date{background:rgba(155,123,255,.14);border-color:rgba(155,123,255,.38);color:#d7c9ff}
+  .exp-row .where{grid-area:where;align-self:center;font-size:9.5px;color:#9bb2cc;text-align:right;line-height:1.18}
   .exp-content{grid-area:content}
-  .exp-row h3{font-size:16.5px;margin-bottom:5px}
+  .exp-row h3{font-size:16px;margin-bottom:5px}
   .exp-row p{font-size:12.5px;line-height:1.5}
   .evidence-link{min-height:30px;margin-top:4px;font-size:11.5px}
 
@@ -5473,37 +5661,86 @@
   .detail-item div>span{font-size:12px;line-height:1.48;margin-top:5px}
   .detail-item small{font-size:11px;margin-top:4px}
 
-  .details-zone .cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .details-zone .cert{
-    min-height:92px;padding:15px 40px 14px 16px;border-radius:18px;
-    border:1px solid rgba(110,168,255,.20);
-    background:
-      radial-gradient(circle at 92% 14%,rgba(110,168,255,.13),transparent 36%),
-      linear-gradient(155deg,rgba(15,21,34,.92),rgba(8,11,19,.90));
-    box-shadow:0 16px 36px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.07);
-    overflow:hidden;
-  }
-  .details-zone .cert::before{
-    content:"";position:absolute;left:16px;right:44px;top:0;height:1.5px;
-    background:linear-gradient(90deg,rgba(97,246,214,.55),rgba(155,123,255,.4),transparent);
-  }
-  .details-zone .cert strong{font-size:13.5px;line-height:1.34;color:#f3f8ff}
-  .details-zone .cert span{
-    display:inline-block;margin-top:9px;padding:4px 8px;border-radius:999px;
-    background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);
-    color:#b8c8dc;font-size:10.5px;font-weight:700;
-  }
-  .details-zone .cert i{
-    right:12px;top:12px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
-    background:rgba(97,246,214,.10);border:1px solid rgba(97,246,214,.28);
-    color:#7ef3dd;font-size:12px;
-  }
-  .details-zone .cert-center.cert-saylor{
-    grid-column:1 / -1;width:calc(50% - 6px);justify-self:center;min-height:92px;
-  }
-  .details-zone .cert-extra{margin-top:7px;font-size:11px}
+  /* Section 07 Certifications (02 / 02): Non-Box Orbital Medallion Wing Pods + Authentic Logos */
+  @keyframes certOrbit{to{transform:rotate(360deg)}}
+  @keyframes certFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 
-  /* --- 4. Contact Section: Compact Landscape 2-col Form Hub --- */
+  .details-zone .cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .details-zone .cert{
+    position:relative;overflow:hidden;min-height:84px;
+    border-radius:999px 24px 999px 24px;
+    border:1px solid rgba(97,246,214,.22);
+    background:
+      radial-gradient(circle at 12% 50%,rgba(97,246,214,.14),transparent 42%),
+      radial-gradient(circle at 88% 20%,rgba(155,123,255,.12),transparent 40%),
+      linear-gradient(145deg,rgba(12,19,32,.92),rgba(7,10,18,.90));
+    box-shadow:0 16px 38px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.08);
+    transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease;
+    animation:certFloat 6s ease-in-out infinite;
+  }
+  .details-zone .cert:nth-child(2n){animation-delay:-1.5s;border-color:rgba(110,168,255,.24)}
+  .details-zone .cert:nth-child(3n){animation-delay:-3s}
+  .details-zone .cert::before{
+    content:"";position:absolute;left:28px;right:48px;top:0;height:1.5px;pointer-events:none;
+    background:linear-gradient(90deg,rgba(97,246,214,.7),rgba(155,123,255,.45),transparent);
+  }
+  .details-zone .cert:is(:hover,:focus-visible,:focus-within){
+    transform:translateY(-4px);border-color:rgba(97,246,214,.62);
+    box-shadow:0 22px 48px rgba(0,0,0,.36),0 0 28px rgba(97,246,214,.14);
+  }
+  .details-zone a.cert,
+  .details-zone .cert-main{
+    display:flex;align-items:center;gap:13px;padding:13px 46px 13px 13px;
+  }
+  .details-zone .cert-logo{
+    position:relative;flex:none;width:52px;height:52px;border-radius:50%;
+    display:grid;place-items:center;padding:5px;
+    background:radial-gradient(circle,rgba(255,255,255,.08),rgba(6,10,18,.92));
+    border:1px solid rgba(97,246,214,.32);
+    box-shadow:0 0 22px rgba(97,246,214,.16),inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .details-zone .cert-logo svg{width:100%;height:100%;display:block;border-radius:10px}
+  .details-zone .cert-logo .seal-orbit{
+    position:absolute;inset:-4px;top:-4px;right:-4px;bottom:-4px;left:-4px;
+    width:auto;height:auto;border-radius:50%;pointer-events:none;
+    border:1.25px dashed rgba(97,246,214,.46);
+    background:transparent;font-style:normal;
+    animation:certOrbit 14s linear infinite;
+  }
+  .details-zone .cert:nth-child(2n) .cert-logo .seal-orbit{
+    border-color:rgba(155,123,255,.52);animation-direction:reverse;
+  }
+  .details-zone .cert-meta{
+    min-width:0;display:flex;flex-direction:column;align-items:flex-start;
+  }
+  .details-zone .cert strong{
+    display:block;font-size:13.5px;line-height:1.3;color:#f3f8ff;margin:0;
+  }
+  .details-zone .cert-meta > span{
+    display:inline-flex;align-items:center;margin-top:6px;padding:3px 9px;border-radius:999px;
+    background:rgba(97,246,214,.09);border:1px solid rgba(97,246,214,.22);
+    color:#a8f7e6;font-size:10px;font-weight:700;line-height:1.2;
+  }
+  .details-zone .cert > i,
+  .details-zone .cert-main > i{
+    position:absolute;right:13px;top:50%;transform:translateY(-50%);
+    width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(97,246,214,.11);border:1px solid rgba(97,246,214,.32);
+    color:#7ef3dd;font-size:12px;font-style:normal;transition:transform .25s ease;
+  }
+  .details-zone .cert:hover > i,
+  .details-zone .cert:hover .cert-main > i{transform:translate(2px,calc(-50% - 2px))}
+  .details-zone .cert-center.cert-saylor{
+    grid-column:1 / -1;width:calc(50% - 7px);justify-self:center;min-height:84px;padding:0;
+  }
+  .details-zone .cert-saylor .cert-main{position:relative;padding-bottom:6px}
+  .details-zone .cert-extra{
+    display:inline-flex;margin:0 0 11px 78px;padding:3px 9px;border-radius:999px;
+    border:1px solid rgba(251,191,36,.32);background:rgba(251,191,36,.09);
+    color:#fde68a;font-size:10px;font-weight:800;
+  }
+
+  /* --- 4. Contact Section: Compact Landscape 2-col Form Hub + Centered Social Orbs --- */
   .contact{min-height:auto;padding:72px 0 76px}
   .contact-card{
     width:min(1120px,calc(100% - 72px));
@@ -5522,15 +5759,17 @@
   .contact-info p{max-width:460px;margin:0;color:#b4bdca;font-size:14.5px;line-height:1.62}
   .contact-availability{margin-top:16px;justify-content:flex-start}
   .contact-direct{
-    width:100%;margin-top:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;
+    width:100%;margin-top:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
     padding-top:16px;border-top:1px solid rgba(255,255,255,.10);
   }
-  .contact-actions{margin-top:0;justify-content:flex-start;gap:8px}
+  .contact-actions{width:100%;margin-top:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
   .contact-actions .btn{min-height:42px;padding:9px 14px;font-size:12px;cursor:pointer}
   .copy-email-btn.is-copied{
     border-color:rgba(97,246,214,.72)!important;background:rgba(97,246,214,.14)!important;color:#d8fff7!important;
   }
-  .social-orbs{margin-top:0;justify-content:flex-start;gap:8px}
+  .social-orbs{
+    width:100%;margin:2px auto 0;display:flex;align-items:center;justify-content:center;gap:12px;
+  }
   .social-orb{width:42px;height:42px}
   .social-orb svg{width:18px;height:18px}
   .contact-form-panel{
@@ -5613,19 +5852,25 @@
     .section-intro{font-size:12px;line-height:1.5;margin-top:8px}
     .section-watermark{font-size:96px;top:-18px;left:-8px}
 
-    /* Mobile Nav: stylish, compact, name visible */
+    /* Mobile Nav: developer command bar with compact <HH/> & Let's talk badge */
     .nav{
-      width:calc(100% - 28px);top:10px;padding:6px 8px 6px 8px;gap:6px;
+      width:calc(100% - 28px);top:10px;padding:5px 7px;gap:5px;border-radius:14px;
     }
-    .nav .brand{padding:2px 8px 2px 2px;gap:7px;max-width:52%}
-    .nav .brand-mark{width:28px;height:28px}
-    .nav .brand-mark b{font-size:9.5px}
+    .nav .brand{padding:2px 7px 2px 3px;gap:6px;max-width:54%}
+    .nav .brand-mark{width:30px;height:24px;border-radius:6px}
+    .nav .brand-mark b{font-size:8px}
     .nav .brand-copy{display:flex!important;gap:0}
-    .nav .brand-name{display:inline-block!important;font-size:11.5px;max-width:118px}
+    .nav .brand-name{display:inline-flex!important;font-size:10.5px;max-width:124px}
+    .nav .brand-name em{font-size:9px;margin-right:2px}
+    .nav .brand-name u{width:4.5px;height:10px;margin-left:3px}
     .nav .brand-tag{display:none!important}
-    .navcta{padding:7px 11px!important;font-size:10.5px!important}
-    .nav-toggle{width:34px;height:34px;gap:4px}
-    .nav-toggle span{width:14px}
+    .navlinks{display:none}
+    .navcta{padding:5px 5px 5px 8px!important;font-size:9.5px!important;gap:5px!important;border-radius:9px!important}
+    .navcta .cta-dot{width:5px;height:5px}
+    .navcta .cta-prompt{font-size:8.5px}
+    .navcta .cta-arrow{width:17px;height:17px;border-radius:5px;font-size:9px}
+    .nav-toggle{width:32px;height:32px;gap:4px}
+    .nav-toggle span{width:13px}
 
     /* Mobile Hero: compact 2-col side-by-side landscape + full portrait + badge BELOW photo */
     .hero{min-height:auto;padding:74px 0 28px}
@@ -5700,7 +5945,7 @@
     .about-focus li strong{font-size:11.5px}
     .about-focus li>span:last-child{font-size:9.5px}
 
-    /* Section 02 Services: compact 2x2 landscape cards */
+    /* Section 02 Services: compact 2x2 landscape cards with fixed 112x82 visual scaling */
     .services-zone{padding:52px 0}
     .services-heading{text-align:left;margin-bottom:20px}
     .services-heading .section-title{font-size:clamp(26px,7vw,36px)}
@@ -5708,21 +5953,43 @@
     .services-heading::after{margin:12px 0 0;width:72px}
     .services-zone .service-tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
     .services-zone .service-tiles > .service-card{
-      min-height:178px;padding:12px 10px 13px;border-radius:18px;
+      min-height:186px;padding:12px 10px 13px;border-radius:18px;
       display:flex;flex-direction:column;align-items:center;text-align:center;
     }
     .services-zone .service-tiles .service-index{left:9px;top:9px;width:24px;height:24px;font-size:8px}
     .services-zone .service-tiles .service-visual{
-      width:min(112px,92%);height:68px;margin:20px auto 10px;border-radius:14px;
+      width:112px;height:82px;margin:18px auto 10px;border-radius:16px;
     }
-    .analytics-motion .analytics-panel{left:10px;top:12px;width:46px;height:40px}
-    .analytics-motion .analytics-grid{left:14px;top:40px;width:36px}
-    .analytics-motion .analytics-line{left:14px;top:29px;width:36px;height:18px}
-    .analytics-motion .p1{left:14px;top:42px}.analytics-motion .p2{left:25px;top:33px}.analytics-motion .p3{left:36px;top:37px}.analytics-motion .p4{left:48px;top:25px}
-    .analytics-motion .analytics-kpi{right:10px;height:9px}
-    .analytics-motion .k1{top:13px;width:28px}.analytics-motion .k2{top:26px;width:20px}
-    .analytics-motion .analytics-ring{right:11px;bottom:10px;width:27px;height:27px;border-width:5px}
-    .analytics-motion .analytics-slice{right:21px;bottom:20px;width:6px;height:6px}
+    .robot-motion .robot-head{top:18px;width:48px;height:35px;border-radius:14px}
+    .robot-motion .robot-antenna{top:7px;height:13px}
+    .robot-motion .robot-antenna::after{width:7px;height:7px}
+    .robot-motion .robot-eye{top:32px;width:7px;height:7px}
+    .robot-motion .e1{left:37px}.robot-motion .e2{right:37px}
+    .robot-motion .robot-mouth{top:44px;width:19px;height:3px}
+    .robot-motion .robot-neck{top:52px;width:14px;height:9px}
+    .robot-motion .robot-body{top:60px;width:58px;height:18px;border-radius:12px 12px 16px 16px}
+    .robot-motion .robot-arm{top:66px;width:18px}
+    .robot-motion .a1{left:17px}.robot-motion .a2{right:17px}
+    .robot-motion .s1{width:68px;height:68px;top:2px}.robot-motion .s2{width:86px;height:86px;top:-7px}
+    .build-motion .stage{left:16px;right:16px;height:15px;border-radius:8px}
+    .build-motion .s1{top:14px}.build-motion .s2{top:33px;left:24px;right:10px}.build-motion .s3{top:52px;left:10px;right:24px}
+    .build-motion .route{height:2px}
+    .build-motion .r1{left:31px;top:21px;width:21px}.build-motion .r2{left:52px;top:40px;width:29px}.build-motion .r3{left:29px;top:59px;width:44px}
+    .build-motion .deploy{right:18px;bottom:14px;width:7px;height:7px}
+    .analytics-motion .analytics-panel{left:8px;top:13px;width:46px;height:42px;border-radius:10px;background-size:14px 100%,100% 14px}
+    .analytics-motion .analytics-grid{left:12px;top:42px;width:36px}
+    .analytics-motion .analytics-line{left:13px;top:30px;width:34px;height:19px}
+    .analytics-motion .analytics-point{width:6px;height:6px}
+    .analytics-motion .p1{left:13px;top:43px}.analytics-motion .p2{left:23px;top:34px}.analytics-motion .p3{left:34px;top:38px}.analytics-motion .p4{left:44px;top:26px}
+    .analytics-motion .analytics-kpi{right:9px;height:10px}
+    .analytics-motion .k1{top:14px;width:28px}.analytics-motion .k2{top:28px;width:20px}
+    .analytics-motion .analytics-ring{right:9px;bottom:13px;width:28px;height:28px;border-width:5px}
+    .analytics-motion .analytics-slice{right:20px;bottom:24px;width:6px;height:6px}
+    .agent-motion .hub{width:22px;height:22px;border-radius:8px}
+    .agent-motion .o1{width:64px;height:42px}.agent-motion .o2{width:42px;height:64px}
+    .agent-motion .node{width:7px;height:7px}
+    .agent-motion .n1{left:22px;top:25px}.agent-motion .n2{right:22px;top:23px}.agent-motion .n3{left:28px;bottom:20px}.agent-motion .n4{right:28px;bottom:20px}
+    .agent-motion .command{bottom:12px;width:42px}
     .services-zone .service-tiles h3{font-size:clamp(13px,3.6vw,16px);line-height:1.08;margin-bottom:5px;text-align:center}
     .services-zone .service-tiles p{max-width:155px;font-size:9.5px;line-height:1.38;text-align:center}
 
@@ -5756,22 +6023,30 @@
       font-size:6.8px;display:flex;align-items:center;justify-content:center;
     }
     .mock,.project-tinyrag .rag-mock,.project-lcorf .mock,.project-ongoing-research .mock{
-      height:112px;margin-top:10px;border-radius:12px;
+      height:114px;margin-top:10px;border-radius:12px;
     }
     .mockbar{height:18px;padding:0 7px;gap:3px}
     .mockbar i{width:3.5px;height:3.5px}
     .mockbody,.project-tinyrag .rag-search-scene,.project-lcorf .audit-ledger,.project-ongoing-research .mockbody{inset:18px 0 0}
 
-    /* More Applied Builds: compact 2x2 cyber-cards */
+    /* More Applied Builds: mobile alternating spine layout */
     .more-title{margin-top:26px;margin-bottom:12px;gap:6px}
     .more-title h3{font-size:21px}
     .more-title p{font-size:11px;line-height:1.45}
-    .more-projects{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .mini-project{min-height:118px;padding:12px;border-radius:14px}
+    .more-projects{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px;padding:8px 0 22px}
+    .mini-project{min-height:112px;padding:11px 10px}
+    .mini-project:nth-child(odd){border-radius:14px 4px 14px 14px}
+    .mini-project:nth-child(even){border-radius:4px 14px 14px 14px;transform:translateY(12px)}
+    .mini-project::before{top:18px;width:12px}
+    .mini-project:nth-child(odd)::before{right:-12px}
+    .mini-project:nth-child(even)::before{left:-12px}
+    .mini-project::after{top:14px;width:8px;height:8px}
+    .mini-project:nth-child(odd)::after{right:-16px}
+    .mini-project:nth-child(even)::after{left:-16px}
     .mini-project .n{font-size:7px;padding:3px 6px}
-    .mini-project h4{font-size:13.5px;margin:8px 0 4px}
-    .mini-project p{font-size:9.5px;line-height:1.36}
-    .mini-project b{font-size:7px;padding:3px 6px;margin-top:7px}
+    .mini-project h4{font-size:13px;margin:7px 0 4px}
+    .mini-project p{font-size:9.3px;line-height:1.35}
+    .mini-project b{font-size:7px;padding:3px 6px;margin-top:6px}
 
     /* Section 04 Research Manuscripts: compact 2x2 */
     .research-grid{gap:18px}
@@ -5789,20 +6064,26 @@
     .metric-card strong{font-size:clamp(22px,6.8vw,30px)}
     .metric-card span{font-size:9px;line-height:1.3}
 
-    /* Section 05 Experience: compact 2x2 card grid */
-    .experience-layout{gap:18px}
+    /* Section 05 Experience: mobile animated botanical tree & leaves */
+    .experience-layout{gap:16px}
     .experience-heading{margin-bottom:0}
     .experience-heading h2{font-size:clamp(26px,7vw,34px);margin:8px 0}
     .experience-heading p{font-size:12px;line-height:1.5}
     .experience-heading::after{margin-top:12px}
-    .exp-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .exp-row{padding:12px 11px;border-radius:16px;gap:6px 8px}
-    .exp-row .date{font-size:9px}
-    .exp-row .where{font-size:7.5px}
-    .exp-kind{font-size:7.5px;margin-bottom:4px}
-    .exp-row h3{font-size:12.5px;line-height:1.25;margin-bottom:4px}
-    .exp-row p{font-size:9.5px;line-height:1.38}
-    .evidence-link{min-height:24px;font-size:9.5px;margin-top:4px}
+    .exp-list.exp-tree{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 42px;padding:18px 0 24px}
+    .exp-tree-svg{width:46px}
+    .exp-row{grid-template-columns:auto minmax(0,1fr);padding:10px 9px;gap:4px 5px}
+    .exp-row:nth-of-type(odd){border-radius:24px 5px 22px 6px}
+    .exp-row:nth-of-type(even){border-radius:5px 24px 6px 22px;margin-top:12px}
+    .exp-row::before{top:32px;width:21px}
+    .exp-row:nth-of-type(odd)::before{right:-21px}
+    .exp-row:nth-of-type(even)::before{left:-21px}
+    .exp-row .date{font-size:6.8px;padding:2px 5px;white-space:nowrap}
+    .exp-row .where{font-size:6.2px;white-space:normal;text-align:right;line-height:1.15;min-width:0}
+    .exp-kind{font-size:7px;margin-bottom:3px}
+    .exp-row h3{font-size:11.5px;line-height:1.22;margin-bottom:4px}
+    .exp-row p{font-size:8.8px;line-height:1.34}
+    .evidence-link{min-height:22px;font-size:9px;margin-top:4px}
 
     /* Section 06 Stack: centered margins + compact 2x2 nodes */
     .stack-system.stack-map{
@@ -5821,7 +6102,7 @@
     .stack-tags{gap:4px}
     .stack-tags b{font-size:7px;padding:4px 6px}
 
-    /* Section 07 Education & Recognition: compact 2x2 + equal centered 7th cert */
+    /* Section 07 Education & Recognition: medallion wing pods + logos */
     .details-zone{padding-top:48px!important}
     .details-zone .section-head{margin-bottom:18px;gap:8px}
     .details-zone .section-title{font-size:clamp(26px,7vw,34px)}
@@ -5837,25 +6118,31 @@
 
     .details-zone .cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .details-zone .cert{
-      min-height:84px;padding:12px 30px 12px 11px;border-radius:15px;
+      min-height:74px;border-radius:26px 14px 26px 14px;
     }
-    .details-zone .cert strong{font-size:10.5px;line-height:1.28}
-    .details-zone .cert span{font-size:8px;padding:3px 6px;margin-top:6px}
-    .details-zone .cert i{right:8px;top:9px;width:20px;height:20px;font-size:9px}
+    .details-zone a.cert,
+    .details-zone .cert-main{padding:9px 26px 9px 8px;gap:7px}
+    .details-zone .cert-logo{width:34px;height:34px;padding:3px}
+    .details-zone .cert-logo .seal-orbit{inset:-3px;top:-3px;right:-3px;bottom:-3px;left:-3px}
+    .details-zone .cert strong{font-size:9.5px;line-height:1.22}
+    .details-zone .cert-meta > span{font-size:7.2px;padding:2px 6px;margin-top:4px}
+    .details-zone .cert > i,
+    .details-zone .cert-main > i{right:7px;width:18px;height:18px;font-size:8.5px}
     .details-zone .cert-center.cert-saylor{
-      grid-column:1 / -1;width:calc(50% - 5px);justify-self:center;min-height:84px;
+      grid-column:1 / -1;width:calc(50% - 5px);justify-self:center;min-height:74px;
     }
-    .details-zone .cert-extra{font-size:8.5px;margin-top:5px}
+    .details-zone .cert-extra{font-size:7.5px;padding:2px 6px;margin:0 0 8px 49px}
 
-    /* Section 08 Contact Form on Mobile */
+    /* Section 08 Contact Form on Mobile: centered actions + centered social icons */
     .contact{padding:52px 0 58px}
     .contact-card{width:min(540px,calc(100% - 36px));padding:20px 16px;border-radius:22px}
     .contact h2{font-size:clamp(26px,7vw,34px);margin:10px 0 10px}
     .contact-info p{font-size:12px;line-height:1.5}
     .contact-availability{margin-top:12px;font-size:8.5px}
-    .contact-direct{margin-top:14px;padding-top:12px;flex-direction:column;align-items:stretch}
+    .contact-direct{margin-top:14px;padding-top:12px;flex-direction:column;align-items:center}
     .contact-actions{display:grid;grid-template-columns:minmax(0,1.52fr) minmax(0,.98fr);gap:8px;width:100%}
     .contact-actions .btn{width:100%;min-height:38px;padding:7px 9px;font-size:clamp(8.5px,2.4vw,10px);white-space:nowrap}
+    .social-orbs{width:100%;justify-content:center;gap:12px}
     .social-orb{width:38px;height:38px}
     .contact-form-panel{padding:14px;border-radius:18px}
     .contact-row-2{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -5915,24 +6202,32 @@
     .audit-dataset-rail b{font-size:4.5px}
     .audit-heatmap{gap:2px}
 
-    .command-column,.command-links{display:none}
-    .orchestrator-core{width:48px;height:28px;border-radius:9px}
-    .orchestrator-core::before{inset:-3px;border-radius:11px}
+    /* Keep Day90 operator command topology alive inside mobile 2x2 cards */
+    .command-column{display:none}
+    .command-links{display:block!important;inset:8px 10px!important;opacity:.55!important}
+    .orchestrator-core{width:44px;height:28px;border-radius:8px}
+    .orchestrator-core::before{inset:-3px;border-radius:10px}
     .orchestrator-core i{width:6px;height:6px;border-radius:2px;margin-top:3px}
     .orchestrator-core strong{font-size:4px}
     .orchestrator-core span{display:none}
-    .operator-node{width:30px;height:18px;padding:0;border-radius:6px;display:grid;place-items:center}
-    .operator-node i{position:static;width:6px;height:6px;border-radius:2px}
-    .operator-node strong,.operator-node span{display:none}
-    .operator-node::after{left:4px;right:4px;bottom:3px;height:1px}
-    .operator-node.n1{left:6px;top:9px}
-    .operator-node.n2{left:6px;top:50%;transform:translateY(-50%)}
-    .operator-node.n3{left:6px;bottom:9px}
-    .operator-node.n4{right:6px;top:9px}
-    .operator-node.n5{right:6px;top:50%;transform:translateY(-50%)}
-    .operator-node.n6{right:6px;bottom:9px}
+    .operator-node{
+      width:38px;height:20px;padding:2px 3px 2px 11px;border-radius:6px;
+      display:flex;align-items:center;
+    }
+    .operator-node i{position:absolute;left:3px;top:50%;transform:translateY(-50%);width:5px;height:5px;border-radius:2px}
+    .operator-node strong{display:block!important;font-size:4px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .operator-node span{display:none}
+    .operator-node::after{left:4px;right:4px;bottom:2px;height:1px}
+    .operator-node.n1{left:5px;top:8px;bottom:auto}
+    .operator-node.n2{left:5px;top:38px;transform:none;bottom:auto}
+    .operator-node.n3{left:5px;top:auto;bottom:8px}
+    .operator-node.n4{right:5px;left:auto;top:8px;bottom:auto}
+    .operator-node.n5{right:5px;left:auto;top:38px;transform:none;bottom:auto}
+    .operator-node.n6{right:5px;left:auto;top:auto;bottom:8px}
 
-    .scan-side-mark,.body-scan-label i{display:none}
+    .scan-side-mark{display:block!important;opacity:.45}
+    .scan-side-mark.left{left:calc(50% - 48px)}.scan-side-mark.right{right:calc(50% - 48px)}
+    .body-scan-label i{display:none}
     .body-scan-svg{width:54px;height:calc(100% - 8px)}
     .body-scan-label{font-size:4.5px;letter-spacing:.05em}
     .label-brain{left:6px;top:14%}.label-thorax{right:6px;top:34%}
@@ -5948,7 +6243,7 @@
     .section-pad{padding:44px 0}
     section[id],.section-pad[id]{scroll-margin-top:64px}
     .nav{width:min(1040px,calc(100% - 32px));top:8px;padding:5px 8px 5px 10px}
-    .nav .brand-name{display:inline-block!important;font-size:12.5px}
+    .nav .brand-name{display:inline-flex!important;font-size:12px}
     .nav .brand-tag{display:inline-flex!important}
     .lab-intro{height:100svh;min-height:320px}
     .lab-copy{top:42%;width:min(700px,calc(100% - 32px))}
@@ -5975,11 +6270,41 @@
     .portrait-bottom small{font-size:7.5px}
 
     .services-zone .service-tiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important}
-    .services-zone .service-tiles > .service-card{min-height:170px;padding:12px 10px}
+    .services-zone .service-tiles > .service-card{min-height:178px;padding:12px 10px}
+    .services-zone .service-tiles .service-visual{width:112px;height:82px;margin:14px auto 8px}
+    .robot-motion .robot-head{top:18px;width:48px;height:35px;border-radius:14px}
+    .robot-motion .robot-antenna{top:7px;height:13px}
+    .robot-motion .robot-eye{top:32px;width:7px;height:7px}
+    .robot-motion .e1{left:37px}.robot-motion .e2{right:37px}
+    .robot-motion .robot-mouth{top:44px;width:19px;height:3px}
+    .robot-motion .robot-neck{top:52px;width:14px;height:9px}
+    .robot-motion .robot-body{top:60px;width:58px;height:18px;border-radius:12px 12px 16px 16px}
+    .robot-motion .robot-arm{top:66px;width:18px}
+    .robot-motion .a1{left:17px}.robot-motion .a2{right:17px}
+    .robot-motion .s1{width:68px;height:68px;top:2px}.robot-motion .s2{width:86px;height:86px;top:-7px}
+    .build-motion .stage{left:16px;right:16px;height:15px;border-radius:8px}
+    .build-motion .s1{top:14px}.build-motion .s2{top:33px;left:24px;right:10px}.build-motion .s3{top:52px;left:10px;right:24px}
+    .build-motion .r1{left:31px;top:21px;width:21px}.build-motion .r2{left:52px;top:40px;width:29px}.build-motion .r3{left:29px;top:59px;width:44px}
+    .build-motion .deploy{right:18px;bottom:14px;width:7px;height:7px}
+    .analytics-motion .analytics-panel{left:8px;top:13px;width:46px;height:42px;border-radius:10px;background-size:14px 100%,100% 14px}
+    .analytics-motion .analytics-grid{left:12px;top:42px;width:36px}
+    .analytics-motion .analytics-line{left:13px;top:30px;width:34px;height:19px}
+    .analytics-motion .analytics-point{width:6px;height:6px}
+    .analytics-motion .p1{left:13px;top:43px}.analytics-motion .p2{left:23px;top:34px}.analytics-motion .p3{left:34px;top:38px}.analytics-motion .p4{left:44px;top:26px}
+    .analytics-motion .analytics-kpi{right:9px;height:10px}
+    .analytics-motion .k1{top:14px;width:28px}.analytics-motion .k2{top:28px;width:20px}
+    .analytics-motion .analytics-ring{right:9px;bottom:13px;width:28px;height:28px;border-width:5px}
+    .analytics-motion .analytics-slice{right:20px;bottom:24px;width:6px;height:6px}
+    .agent-motion .hub{width:22px;height:22px;border-radius:8px}
+    .agent-motion .o1{width:64px;height:42px}.agent-motion .o2{width:42px;height:64px}
+    .agent-motion .node{width:7px;height:7px}
+    .agent-motion .n1{left:22px;top:25px}.agent-motion .n2{right:22px;top:23px}.agent-motion .n3{left:28px;bottom:20px}.agent-motion .n4{right:28px;bottom:20px}
+    .agent-motion .command{bottom:12px;width:42px}
     .projects{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
     .project-ongoing-research{width:calc(50% - 6px)!important}
-    .more-projects{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .research-list,.exp-list,.detail-list,.details-zone .cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .more-projects{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 40px}
+    .exp-list.exp-tree{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 78px}
+    .research-list,.detail-list,.details-zone .cert-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .details-zone .cert-center.cert-saylor{width:calc(50% - 5px)}
     .metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
     .stack-system.stack-map{grid-template-columns:repeat(3,minmax(0,1fr));width:min(1040px,calc(100% - 40px))}
@@ -5989,6 +6314,8 @@
     .contact{padding:40px 0 46px}
     .contact-card{width:min(1040px,calc(100% - 40px));padding:20px 22px}
     .contact-grid{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:20px}
+    .contact-direct{align-items:center}
+    .social-orbs{justify-content:center}
     .contact-field textarea{min-height:62px}
     .footer{width:min(1040px,calc(100% - 40px))}
   }

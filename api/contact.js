@@ -1,4 +1,6 @@
 const RESEND_ENDPOINT = "https://api.resend.com/emails";
+const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/";
+const SITE_ORIGIN = "https://hasnain-portfolio-snowy.vercel.app";
 const DEFAULT_TO_EMAIL = "hhnain1006@gmail.com";
 const DEFAULT_FROM_EMAIL = "Hasnain Portfolio <onboarding@resend.dev>";
 const EMAIL_PATTERN = /^[^\s@<>()[\]\\,;:\s@"]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -125,22 +127,62 @@ export async function POST(request) {
     return jsonResponse({ ok: false, field: "message", error: "Please write a message (at least 5 characters)." }, 400);
   }
 
+  const toEmail = cleanSingleLine(process.env.CONTACT_TO_EMAIL || DEFAULT_TO_EMAIL, 160) || DEFAULT_TO_EMAIL;
+  const fromEmail = cleanSingleLine(process.env.RESEND_FROM_EMAIL || DEFAULT_FROM_EMAIL, 160) || DEFAULT_FROM_EMAIL;
+  const submittedAt = new Date().toISOString();
+
   const apiKey = process.env.RESEND_API_KEY?.trim();
   if (!apiKey) {
+    if (process.env.VERCEL || process.env.ALLOW_FORMSUBMIT_RELAY) {
+      try {
+        const relayOrigin = request.headers.get("origin") || SITE_ORIGIN;
+        const fsRes = await fetch(FORMSUBMIT_ENDPOINT + encodeURIComponent(toEmail), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Origin: relayOrigin,
+            Referer: `${relayOrigin}/`,
+            "User-Agent": "Mozilla/5.0 (compatible; HasnainPortfolio/1.0)"
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            _replyto: email,
+            topic,
+            _subject: `[Portfolio · ${topic}] ${subject} — ${name}`,
+            message,
+            _template: "box",
+            _captcha: "false"
+          }),
+          signal: AbortSignal.timeout(4500)
+        });
+        const fsData = await fsRes.json().catch(() => ({}));
+        if (fsRes.ok && (fsData?.success === "true" || fsData?.success === true)) {
+          return jsonResponse({
+            ok: true,
+            id: "formsubmit",
+            relay: "formsubmit",
+            latencyMs: Date.now() - startedAt
+          });
+        }
+      } catch (err) {
+        console.warn("[contact] Server relay unavailable, deferring to client relay", err?.message || err);
+      }
+    }
+
     console.error("[contact] Missing RESEND_API_KEY environment variable.");
     return jsonResponse(
       {
         ok: false,
         code: "EMAIL_NOT_CONFIGURED",
-        error: "Email delivery is not configured on the server yet. Add RESEND_API_KEY in Vercel or email directly."
+        relay: "client",
+        toEmail,
+        error: "Server key not set; switching to direct browser delivery."
       },
       503
     );
   }
-
-  const toEmail = cleanSingleLine(process.env.CONTACT_TO_EMAIL || DEFAULT_TO_EMAIL, 160) || DEFAULT_TO_EMAIL;
-  const fromEmail = cleanSingleLine(process.env.RESEND_FROM_EMAIL || DEFAULT_FROM_EMAIL, 160) || DEFAULT_FROM_EMAIL;
-  const submittedAt = new Date().toISOString();
 
   const textBody = [
     `Portfolio Contact (${topic})`,
