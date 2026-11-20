@@ -155,7 +155,7 @@ export async function POST(request) {
             _template: "box",
             _captcha: "false"
           }),
-          signal: AbortSignal.timeout(4500)
+          signal: AbortSignal.timeout(2200)
         });
         const fsData = await fsRes.json().catch(() => ({}));
         if (fsRes.ok && (fsData?.success === "true" || fsData?.success === true)) {

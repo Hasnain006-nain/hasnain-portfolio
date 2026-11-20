@@ -1,33 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="bgGrad" x1="6" y1="6" x2="58" y2="58" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0d1424"/>
-      <stop offset="0.55" stop-color="#070a12"/>
-      <stop offset="1" stop-color="#121024"/>
-    </linearGradient>
-    <linearGradient id="rimGrad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#61f6d6"/>
-      <stop offset="0.38" stop-color="#6ea8ff"/>
-      <stop offset="0.72" stop-color="#9b7bff"/>
-      <stop offset="1" stop-color="#ff67b1"/>
-    </linearGradient>
-    <linearGradient id="hhGrad" x1="16" y1="16" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#e8fffa"/>
-      <stop offset="0.45" stop-color="#61f6d6"/>
-      <stop offset="1" stop-color="#8eb8ff"/>
-    </linearGradient>
-    <radialGradient id="coreGlow" cx="50%" cy="46%" r="52%">
-      <stop offset="0" stop-color="#61f6d6" stop-opacity="0.28"/>
-      <stop offset="0.65" stop-color="#9b7bff" stop-opacity="0.08"/>
-      <stop offset="1" stop-color="#070a12" stop-opacity="0"/>
+    <radialGradient id="auraHalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#61f6d6" stop-opacity="0.52"/>
+      <stop offset="48%" stop-color="#6ea8ff" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#9b7bff" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="ringA" x1="8" y1="12" x2="56" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#61f6d6"/>
+      <stop offset="52%" stop-color="#6ea8ff"/>
+      <stop offset="100%" stop-color="#9b7bff"/>
+    </linearGradient>
+    <linearGradient id="ringB" x1="56" y1="12" x2="8" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#9b7bff"/>
+      <stop offset="50%" stop-color="#61f6d6"/>
+      <stop offset="100%" stop-color="#ff67b1"/>
+    </linearGradient>
+    <linearGradient id="starCore" x1="16" y1="10" x2="48" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="45%" stop-color="#7ef9e2"/>
+      <stop offset="100%" stop-color="#7aa9ff"/>
+    </linearGradient>
   </defs>
-  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bgGrad)" stroke="url(#rimGrad)" stroke-width="2.4"/>
-  <rect x="5" y="5" width="54" height="54" rx="13" fill="url(#coreGlow)"/>
-  <path d="M18 11H46L53 18V46L46 53H18L11 46V18Z" fill="none" stroke="rgba(97,246,214,0.24)" stroke-width="1.2"/>
-  <path d="M19 20V44M29 20V44M19 32H29M35 20V44M45 20V44M35 32H45" fill="none" stroke="url(#hhGrad)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M29 32H35" stroke="#9b7bff" stroke-width="2.8" stroke-linecap="round"/>
-  <circle cx="19" cy="20" r="2.2" fill="#61f6d6"/>
-  <circle cx="45" cy="44" r="2.2" fill="#ff67b1"/>
-  <circle cx="32" cy="32" r="2.5" fill="#f4fbff"/>
+  <circle cx="32" cy="32" r="29" fill="url(#auraHalo)"/>
+  <ellipse cx="32" cy="32" rx="26" ry="11.5" transform="rotate(-34 32 32)" fill="none" stroke="url(#ringA)" stroke-width="2.6" stroke-linecap="round"/>
+  <ellipse cx="32" cy="32" rx="26" ry="11.5" transform="rotate(34 32 32)" fill="none" stroke="url(#ringB)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+  <path d="M32 7C33.6 21.8 42.2 30.4 57 32C42.2 33.6 33.6 42.2 32 57C30.4 42.2 21.8 33.6 7 32C21.8 30.4 30.4 21.8 32 7Z" fill="url(#starCore)"/>
+  <circle cx="32" cy="32" r="4.2" fill="#ffffff"/>
+  <circle cx="51" cy="17" r="2.6" fill="#61f6d6"/>
+  <circle cx="13" cy="47" r="2.3" fill="#ff7ec2"/>
 </svg>

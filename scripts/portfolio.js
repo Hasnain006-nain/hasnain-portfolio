@@ -12,6 +12,7 @@
   function closeNavigation(returnFocus = false){
     if (!nav || !navToggle) return;
     nav.classList.remove("is-open");
+    body.classList.remove("menu-open");
     navToggle.setAttribute("aria-expanded", "false");
     navToggle.setAttribute("aria-label", "Open navigation");
     if (returnFocus) navToggle.focus();
@@ -20,6 +21,7 @@
   navToggle?.addEventListener("click", () => {
     const isOpen = navToggle.getAttribute("aria-expanded") === "true";
     nav.classList.toggle("is-open", !isOpen);
+    body.classList.toggle("menu-open", !isOpen);
     navToggle.setAttribute("aria-expanded", String(!isOpen));
     navToggle.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
   });
@@ -279,25 +281,42 @@
   };
 
   const clearSmoke = () => {
-    smokePool.forEach(p => p.classList.remove("is-active"));
+    smokePool.forEach(p => {
+      p.classList.remove("is-active", "is-flame");
+      p.getAnimations?.().forEach(a => a.cancel());
+      p.style.opacity = "0";
+    });
   };
 
   const emitSmoke = (x, y) => {
     if (reduce || !smokePool.length || body.classList.contains("profile-cursor-safe")) return;
     const now = performance.now();
     const dist = Math.hypot(x - lastSmokeX, y - lastSmokeY);
-    if (now - lastSmokeAt < 46 || dist < 10) return;
+    if (now - lastSmokeAt < 44 || dist < 9) return;
     lastSmokeAt = now;
     lastSmokeX = x;
     lastSmokeY = y;
-    const puff = smokePool[smokeIdx++ % smokePool.length];
-    puff.classList.remove("is-active");
-    puff.style.left = x.toFixed(1) + "px";
-    puff.style.top = (y + 13).toFixed(1) + "px";
-    puff.style.setProperty("--dx", ((Math.random() - .5) * 18).toFixed(1) + "px");
-    puff.style.setProperty("--dy", (10 + Math.random() * 14).toFixed(1) + "px");
-    void puff.offsetWidth;
+    const idx = smokeIdx++;
+    const puff = smokePool[idx % smokePool.length];
+    const isFlame = idx % 3 === 0;
+    const dx = ((Math.random() - .5) * (isFlame ? 12 : 18)).toFixed(1);
+    const dy = (isFlame ? 11 + Math.random() * 8 : 13 + Math.random() * 14).toFixed(1);
+    puff.classList.toggle("is-flame", isFlame);
     puff.classList.add("is-active");
+    puff.style.left = x.toFixed(1) + "px";
+    puff.style.top = (y + 15).toFixed(1) + "px";
+    if (typeof puff.animate === "function") {
+      puff.getAnimations?.().forEach(a => a.cancel());
+      const anim = puff.animate([
+        { opacity: isFlame ? 0.56 : 0.30, transform: `translate(-50%,-50%) scale(${isFlame ? 0.55 : 0.48})` },
+        { opacity: isFlame ? 0.34 : 0.18, offset: 0.42 },
+        { opacity: 0, transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(${isFlame ? 1.35 : 1.82})` }
+      ], { duration: isFlame ? 380 : 540, easing: "cubic-bezier(.16,1,.3,1)", fill: "forwards" });
+      anim.onfinish = () => puff.classList.remove("is-active");
+    } else {
+      puff.style.setProperty("--dx", dx + "px");
+      puff.style.setProperty("--dy", dy + "px");
+    }
   };
 
   let cx=innerWidth/2, cy=innerHeight/2, tx=cx, ty=cy, gx=cx, gy=cy;
@@ -365,7 +384,7 @@
   }, {passive:true});
 
   const interactiveItems = document.querySelectorAll(
-    "a,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.brand,.topic-chip,.portrait-bottom,.tilt"
+    "a,button,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-cta,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.tilt"
   );
 
   interactiveItems.forEach(el => {
@@ -393,7 +412,7 @@
     el.style.setProperty("--motion-y", (ny * 9).toFixed(2) + "px");
   };
 
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-cta,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
     let pressTimer = 0;
     const delayedClear = () => {
       clearTimeout(pressTimer);
@@ -425,7 +444,7 @@
   });
 
   // Spotlight values for cards.
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.exp-row,.clarity-callout,.profile-panel,.social-orb").forEach(card => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.exp-row,.clarity-callout,.profile-panel,.social-orb").forEach(card => {
     card.addEventListener("pointermove", e => {
       setInteractionPoint(card, e);
     });
@@ -555,6 +574,21 @@
       }
     };
 
+    let serverConfigured = null;
+    let warmedContactApi = false;
+    const warmContactApi = () => {
+      if (warmedContactApi) return;
+      warmedContactApi = true;
+      fetch("/api/contact", { method: "GET", headers: { Accept: "application/json" } })
+        .then(r => r.json())
+        .then(info => {
+          if (typeof info?.configured === "boolean") serverConfigured = info.configured;
+        })
+        .catch(() => {});
+    };
+    contactForm.addEventListener("focusin", warmContactApi, { once: true, passive: true });
+    contactForm.addEventListener("pointerenter", warmContactApi, { once: true, passive: true });
+
     const relayThroughBrowser = async (toEmail, payload) => {
       const target = toEmail || "hhnain1006@gmail.com";
       const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(target)}`, {
@@ -572,7 +606,8 @@
           message: payload.message,
           _template: "box",
           _captcha: "false"
-        })
+        }),
+        signal: typeof AbortSignal !== "undefined" && AbortSignal.timeout ? AbortSignal.timeout(5500) : undefined
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || (json?.success !== "true" && json?.success !== true)) {
@@ -643,6 +678,29 @@
       const started = performance.now();
 
       try {
+        if (serverConfigured === false && !website) {
+          try {
+            await relayThroughBrowser("hhnain1006@gmail.com", { name, email, topic, subject, message });
+            const elapsed = Math.round(performance.now() - started);
+            showStatus("success", `Message sent to Hasnain (${elapsed}ms). I'll reply to ${email} soon.`);
+            contactForm.reset();
+            topicChips.forEach((chip, idx) => chip.classList.toggle("is-active", idx === 0));
+            if (topicInput && topicChips[0]) topicInput.value = topicChips[0].dataset.topic || "Research Collaboration";
+            return;
+          } catch (fastErr) {
+            if (fastErr?.needsActivation) {
+              showStatus(
+                "error",
+                "One-time activation link sent to hhnain1006@gmail.com — click Activate once, or send right now via Gmail:",
+                mailtoFallback,
+                gmailCompose,
+                "Email app ↗"
+              );
+              return;
+            }
+          }
+        }
+
         const response = await fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
