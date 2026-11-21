@@ -424,7 +424,7 @@
     el.style.setProperty("--motion-y", (ny * 9).toFixed(2) + "px");
   };
 
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.honor-link,.exp-row,.time-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-mail,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.honor-link,.exp-row,.time-row,.clarity-callout,.skill-pill,.social-orb,.contact-pass,.pass-copy-btn,.pass-email-link,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-mail,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
     let pressTimer = 0;
     const delayedClear = () => {
       clearTimeout(pressTimer);
@@ -456,7 +456,7 @@
   });
 
   // Spotlight values for cards on both desktop hover and mobile touch/drag.
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.exp-row,.time-row,.clarity-callout,.profile-panel,.social-orb,.contact-form-panel").forEach(card => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.exp-row,.time-row,.clarity-callout,.profile-panel,.social-orb,.contact-pass,.contact-form-panel").forEach(card => {
     card.addEventListener("pointermove", e => {
       setInteractionPoint(card, e);
     }, {passive:true});
@@ -509,6 +509,26 @@
   updateScrollDriven();
   if (finePointer) requestAnimationFrame(frame);
 
+  // Contact section: live Alor Setar (MYT) local clock.
+  const localTimeEl = document.getElementById("contact-local-time");
+  if (localTimeEl) {
+    const syncLocalTime = () => {
+      try {
+        const formatted = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Kuala_Lumpur",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }).format(new Date());
+        localTimeEl.textContent = `${formatted} MYT`;
+      } catch {
+        localTimeEl.textContent = "UTC+8 MYT";
+      }
+    };
+    syncLocalTime();
+    setInterval(syncLocalTime, 30000);
+  }
+
   // Contact form: low-latency submission + copy email + mailto fallback.
   const copyBtn = document.querySelector(".copy-email-btn");
   if (copyBtn) {
@@ -544,13 +564,31 @@
     const submitLabel = submitBtn?.querySelector(".contact-button-label");
     const statusBox = document.getElementById("contact-status");
     const charCount = document.getElementById("contact-char-count");
+    const modeBadge = document.getElementById("composer-mode-badge");
+    const briefFill = document.getElementById("brief-progress-fill");
+    const briefReadiness = document.getElementById("brief-readiness");
     const emailRegex = /^[^\s@<>()[\]\\,;:\s@"]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+    const syncBriefProgress = () => {
+      let score = 0;
+      if ((nameInput?.value || "").trim().length >= 2) score += 25;
+      if (emailRegex.test((emailInput?.value || "").trim())) score += 25;
+      if ((subjectInput?.value || "").trim().length >= 2) score += 25;
+      if ((messageInput?.value || "").trim().length >= 5) score += 25;
+      if (briefFill) briefFill.style.width = `${score}%`;
+      if (briefReadiness) {
+        briefReadiness.textContent = score === 100 ? "READY TO DISPATCH" : `${score}% READY`;
+        briefReadiness.classList.toggle("is-complete", score === 100);
+      }
+    };
 
     const syncCharCount = () => {
       if (charCount && messageInput) charCount.textContent = `${messageInput.value.length} / 4000`;
+      syncBriefProgress();
     };
+    [nameInput, emailInput, subjectInput].forEach(el => el?.addEventListener("input", syncBriefProgress));
     messageInput?.addEventListener("input", syncCharCount);
-    contactForm.addEventListener("reset", () => setTimeout(syncCharCount, 0));
+    contactForm.addEventListener("reset", () => setTimeout(() => { syncCharCount(); syncBriefProgress(); }, 0));
     syncCharCount();
 
     topicChips.forEach(chip => {
@@ -558,6 +596,8 @@
         topicChips.forEach(item => item.classList.remove("is-active"));
         chip.classList.add("is-active");
         if (topicInput) topicInput.value = chip.dataset.topic || "General Inquiry";
+        if (modeBadge && chip.dataset.mode) modeBadge.textContent = chip.dataset.mode;
+        if (subjectInput && chip.dataset.placeholder) subjectInput.placeholder = chip.dataset.placeholder;
       });
     });
 

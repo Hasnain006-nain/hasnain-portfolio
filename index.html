@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles/portfolio.css?v=sentinel-v6-20261121">
+<link rel="stylesheet" href="./styles/portfolio.css?v=sentinel-v8-20261121">
 
 </head>
 <body class="lab-active">
@@ -1039,95 +1039,140 @@
   <section class="contact section-marked" id="contact" aria-labelledby="contact-title">
     <div class="contact-card contact-studio" data-reveal>
       <div class="contact-aurora" aria-hidden="true"></div>
+      <div class="contact-ghost-num" aria-hidden="true">08</div>
+
+      <header class="contact-masthead">
+        <div class="contact-masthead-top">
+          <div class="kicker">08 / Contact &amp; collaboration</div>
+          <div class="contact-live-pill" aria-label="Availability and local time in Alor Setar, Malaysia">
+            <i aria-hidden="true"></i>
+            <span>Alor Setar, MY</span>
+            <b id="contact-local-time">MYT</b>
+            <em>Reply &lt; 24h</em>
+          </div>
+        </div>
+        <div class="contact-masthead-main">
+          <h2 id="contact-title">Let’s build something <span>worth shipping.</span></h2>
+          <p class="contact-lead">Research collaborations, applied ML systems, agentic workflows, or computer-vision deployment — send a brief directly and it lands straight in my inbox.</p>
+        </div>
+        <div class="contact-rule" aria-hidden="true"><span></span></div>
+      </header>
+
       <div class="contact-grid">
         <div class="contact-info">
-          <div class="kicker">08 / Contact &amp; collaboration</div>
-          <h2 id="contact-title">Let's build something <span>worth shipping.</span></h2>
-          <p>Research collaborations, applied ML systems, agentic workflows, RAG benchmarks or computer-vision deployment — send a note directly and it lands straight in my inbox.</p>
-          <div class="contact-availability"><span aria-hidden="true"></span>Available for AI research &amp; engineering collaborations</div>
-
-          <div class="contact-signal-hud" aria-hidden="true">
-            <div class="signal-hud-top">
-              <span class="signal-node"><i></i>ALOR SETAR, MY · DIRECT UPLINK</span>
-              <span class="signal-latency">FAST RELAY · ~20ms</span>
+          <div class="contact-pass">
+            <div class="contact-pass-head">
+              <div class="contact-pass-id">
+                <span class="pass-crest" aria-hidden="true">
+                  <svg viewBox="0 0 64 64" width="24" height="24">
+                    <path d="M16 26 L26 22 L35 25 L35 37 C35 45 26 51 25.5 51.4 C25 51 16 45 16 37 Z" fill="#0d2336" stroke="#61f6d6" stroke-width="2.4" stroke-linejoin="round"/>
+                    <path d="M25.5 27.5 L25.5 44.5 M20.5 34.5 L30.5 34.5" stroke="#61f6d6" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M35 28 L52 10" stroke="#e9fffb" stroke-width="3.2" stroke-linecap="round"/>
+                    <path d="M33.5 25 L41.5 32.5" stroke="#61f6d6" stroke-width="2.2" stroke-linecap="round"/>
+                    <circle cx="31.5" cy="18" r="4.5" fill="#61f6d6"/>
+                    <path d="M29 24.5 L34.5 24.5 L36.5 37 L34.5 50.5 L31 39.5 L27 50.5 L26 37 Z" fill="#8bb6ff" opacity=".92"/>
+                  </svg>
+                </span>
+                <div>
+                  <strong>Hasnain Haider</strong>
+                  <span>Applied AI Researcher &amp; Engineer</span>
+                </div>
+              </div>
+              <span class="pass-status"><i></i>Open</span>
             </div>
-            <svg class="signal-wave-svg" viewBox="0 0 320 34" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="signalWaveGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#61f6d6" stop-opacity=".2"/>
-                  <stop offset="50%" stop-color="#61f6d6" stop-opacity=".95"/>
-                  <stop offset="100%" stop-color="#9b7bff" stop-opacity=".4"/>
-                </linearGradient>
-              </defs>
-              <path class="signal-grid-line" d="M0 17 H320"/>
-              <path class="signal-wave-path" d="M0 17 Q 20 4, 40 17 T 80 17 T 120 17 T 160 17 T 200 17 T 240 17 T 280 17 T 320 17" stroke="url(#signalWaveGrad)"/>
-              <circle class="signal-packet p1" cx="0" cy="17" r="3.2"/>
-              <circle class="signal-packet p2" cx="0" cy="17" r="2.6"/>
-            </svg>
+
+            <ul class="contact-pass-scope" aria-label="Collaboration scope">
+              <li><span>01</span><b>Research papers, audits &amp; evaluation benchmarks</b></li>
+              <li><span>02</span><b>Agentic AI, RAG pipelines &amp; computer-vision systems</b></li>
+              <li><span>03</span><b>ML engineering roles, internships &amp; product builds</b></li>
+            </ul>
+
+            <div class="contact-pass-email">
+              <span class="pass-label">Direct Inbox</span>
+              <div class="pass-email-row">
+                <a class="pass-email-link" href="mailto:hhnain1006@gmail.com">hhnain1006@gmail.com <span aria-hidden="true">↗</span></a>
+                <button class="pass-copy-btn copy-email-btn" type="button" data-email="hhnain1006@gmail.com">
+                  <svg viewBox="0 0 20 20" width="12" height="12" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M5 13H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 2h7a1.5 1.5 0 0 1 1.5 1.5V5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  <span class="contact-button-label">Copy email</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="contact-pass-meta">
+              <div>
+                <span>Primary Focus</span>
+                <b>Applied ML · Agents · CV</b>
+              </div>
+              <div>
+                <span>Collaboration</span>
+                <b>Research · Roles · Builds</b>
+              </div>
+            </div>
           </div>
 
           <div class="contact-direct">
-            <div class="contact-actions">
-              <a class="btn magnetic" href="mailto:hhnain1006@gmail.com"><span class="contact-button-label">hhnain1006@gmail.com</span><span class="arrow" aria-hidden="true">↗</span></a>
-              <button class="btn magnetic copy-email-btn" type="button" data-email="hhnain1006@gmail.com"><span class="contact-button-label">Copy email</span></button>
-            </div>
             <div class="social-orbs" aria-label="Social links">
               <a class="social-orb magnetic" href="https://www.linkedin.com/in/hasnain-machinelearning-engineer/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.94 8.98H3.72v10.4h3.22V8.98ZM5.35 4.02a1.86 1.86 0 1 0-.04 3.72 1.86 1.86 0 0 0 .04-3.72Zm13.93 9.39c0-3.12-1.67-4.58-3.9-4.58a3.36 3.36 0 0 0-3.02 1.66h-.04V8.98H9.24v10.4h3.2v-5.15c0-1.36.26-2.68 1.95-2.68 1.66 0 1.68 1.56 1.68 2.77v5.06h3.21v-5.97Z"/></svg>
+                <span>LinkedIn</span>
+                <i aria-hidden="true">↗</i>
               </a>
               <a class="social-orb magnetic" href="https://github.com/Hasnain006-nain" target="_blank" rel="noreferrer" aria-label="GitHub profile">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.02 2.25a9.88 9.88 0 0 0-3.12 19.25c.49.09.67-.21.67-.47v-1.74c-2.73.6-3.3-1.18-3.3-1.18-.45-1.13-1.09-1.43-1.09-1.43-.89-.61.07-.6.07-.6.98.07 1.5 1.01 1.5 1.01.87 1.49 2.29 1.06 2.85.81.09-.63.34-1.06.62-1.31-2.18-.25-4.47-1.09-4.47-4.86 0-1.07.38-1.95 1.01-2.64-.1-.25-.44-1.25.1-2.6 0 0 .83-.27 2.7 1.01a9.32 9.32 0 0 1 4.92 0c1.87-1.28 2.69-1.01 2.69-1.01.54 1.35.2 2.35.1 2.6.63.69 1.01 1.57 1.01 2.64 0 3.78-2.3 4.61-4.49 4.85.35.31.67.91.67 1.83v2.71c0 .26.18.57.68.47a9.88 9.88 0 0 0-3.1-19.25Z"/></svg>
+                <span>GitHub</span>
+                <i aria-hidden="true">↗</i>
               </a>
             </div>
           </div>
         </div>
 
         <div class="contact-form-panel">
+          <div class="brief-progress-track" aria-hidden="true"><span class="brief-progress-fill" id="brief-progress-fill"></span></div>
           <div class="composer-bar" aria-hidden="true">
-            <div class="composer-title"><i></i>DIRECT MESSAGE DISPATCH</div>
-            <div class="composer-meta">REPLY &lt; 24H</div>
+            <div class="composer-title"><i></i><span id="composer-mode-badge">RESEARCH BRIEF</span></div>
+            <div class="composer-meta" id="brief-readiness">0% READY</div>
           </div>
           <form id="contact-form" class="contact-form" action="/api/contact" method="post" novalidate>
             <input type="hidden" name="topic" id="contact-topic" value="Research Collaboration">
             <div class="topic-row" role="group" aria-label="Inquiry topic">
-              <button type="button" class="topic-chip is-active" data-topic="Research Collaboration"><b>01</b>Research</button>
-              <button type="button" class="topic-chip" data-topic="Applied AI / ML"><b>02</b>Applied AI / ML</button>
-              <button type="button" class="topic-chip" data-topic="Full-Stack / Role"><b>03</b>Role / Build</button>
-              <button type="button" class="topic-chip" data-topic="General Inquiry"><b>04</b>General</button>
+              <button type="button" class="topic-chip is-active" data-topic="Research Collaboration" data-mode="RESEARCH BRIEF" data-placeholder="Co-authorship, benchmark study, or paper collaboration"><b>01</b><span>Research</span></button>
+              <button type="button" class="topic-chip" data-topic="Applied AI / ML" data-mode="APPLIED AI BRIEF" data-placeholder="RAG system, agent workflow, or computer-vision pipeline"><b>02</b><span>Applied AI</span></button>
+              <button type="button" class="topic-chip" data-topic="Full-Stack / Role" data-mode="ROLE &amp; BUILD BRIEF" data-placeholder="ML/AI engineering role, internship, or product build"><b>03</b><span>Role / Build</span></button>
+              <button type="button" class="topic-chip" data-topic="General Inquiry" data-mode="DIRECT NOTE" data-placeholder="Speaking invite, mentorship, or quick introduction"><b>04</b><span>General</span></button>
             </div>
 
             <div class="contact-row-2">
               <div class="contact-field">
-                <label for="contact-name">Your name</label>
+                <label for="contact-name"><em>01</em>Your name</label>
                 <div class="field-shell">
-                  <input id="contact-name" name="name" type="text" required minlength="2" maxlength="100" autocomplete="name" placeholder="Jane Doe">
+                  <input id="contact-name" name="name" type="text" required minlength="2" maxlength="100" autocomplete="name" placeholder="Dr. Sarah Lin">
                   <span class="field-beam" aria-hidden="true"></span>
                 </div>
               </div>
               <div class="contact-field">
-                <label for="contact-email">Email address</label>
+                <label for="contact-email"><em>02</em>Email address</label>
                 <div class="field-shell">
-                  <input id="contact-email" name="email" type="email" required maxlength="160" autocomplete="email" placeholder="you@company.com">
+                  <input id="contact-email" name="email" type="email" required maxlength="160" autocomplete="email" placeholder="sarah@lab.org">
                   <span class="field-beam" aria-hidden="true"></span>
                 </div>
               </div>
             </div>
 
             <div class="contact-field">
-              <label for="contact-subject">Subject</label>
+              <label for="contact-subject"><em>03</em>Subject</label>
               <div class="field-shell">
-                <input id="contact-subject" name="subject" type="text" required minlength="2" maxlength="160" placeholder="Project idea, research paper, or collaboration">
+                <input id="contact-subject" name="subject" type="text" required minlength="2" maxlength="160" placeholder="Co-authorship, benchmark study, or paper collaboration">
                 <span class="field-beam" aria-hidden="true"></span>
               </div>
             </div>
 
             <div class="contact-field">
               <div class="field-label-row">
-                <label for="contact-message">Message</label>
+                <label for="contact-message"><em>04</em>Project or message brief</label>
                 <span class="field-char-count" id="contact-char-count">0 / 4000</span>
               </div>
               <div class="field-shell">
-                <textarea id="contact-message" name="message" rows="4" required minlength="5" maxlength="4000" placeholder="Tell me about the problem, constraints, or timeline..."></textarea>
+                <textarea id="contact-message" name="message" rows="4" required minlength="5" maxlength="4000" placeholder="Share the problem, goals, timeline, or links..."></textarea>
                 <span class="field-beam" aria-hidden="true"></span>
               </div>
             </div>
@@ -1220,6 +1265,6 @@
   <script src="./webgl-fluid.js?v=fluid-touch-scroll-20261120"></script>
 
   <!-- Portfolio interactions -->
-<script src="./scripts/portfolio.js?v=sentinel-v6-20261121"></script>
+<script src="./scripts/portfolio.js?v=sentinel-v8-20261121"></script>
 </body>
 </html>
