@@ -142,14 +142,19 @@
       if (!holoRaf) holoRaf = requestAnimationFrame(moveHoloSpotlight);
     };
     const getPoint = e => e?.touches?.[0] || e?.changedTouches?.[0] || e;
-    const setPortraitAura = (e, size = 105) => {
-      if (!isPortrait || reduce) return;
+    const getLocalizedLensSize = width => {
+      if (width <= 190) return Math.round(Math.max(24, Math.min(36, width * 0.23)));
+      return Math.round(Math.max(36, Math.min(52, width * 0.165)));
+    };
+    const setPortraitAura = (e, sizeOverride) => {
+      if (!isPortrait || reduce) return null;
       const pt = getPoint(e);
-      if (!pt || pt.clientX == null) return;
+      if (!pt || pt.clientX == null) return null;
       const r = mediaEl.getBoundingClientRect();
-      if (!r.width || !r.height) return;
+      if (!r.width || !r.height) return null;
       const px = Math.max(0, Math.min(1, (pt.clientX-r.left)/r.width));
       const py = Math.max(0, Math.min(1, (pt.clientY-r.top)/r.height));
+      const lensSize = sizeOverride || getLocalizedLensSize(r.width);
       card.classList.add("portrait-active");
       if (holoEl) {
         holoEl.style.setProperty("opacity", "0.94", "important");
@@ -157,11 +162,12 @@
       }
       card.style.setProperty("--aura-x",(px*100).toFixed(2)+"%");
       card.style.setProperty("--aura-y",(py*100).toFixed(2)+"%");
-      card.style.setProperty("--holo-size",size+"px");
+      card.style.setProperty("--holo-size",lensSize+"px");
       setHoloTarget(px*100,py*100);
-      card.style.setProperty("--portrait-img-x",((px-.5)*10).toFixed(2)+"px");
-      card.style.setProperty("--portrait-img-y",((py-.5)*10).toFixed(2)+"px");
-      card.style.setProperty("--portrait-img-scale","1.13");
+      card.style.setProperty("--portrait-img-x",((px-.5)*7).toFixed(2)+"px");
+      card.style.setProperty("--portrait-img-y",((py-.5)*7).toFixed(2)+"px");
+      card.style.setProperty("--portrait-img-scale","1.115");
+      return { px: px * 100, py: py * 100, lensSize };
     };
     const resetPortrait = () => {
       if (!isPortrait) return;
@@ -174,7 +180,7 @@
       }
       card.style.setProperty("--aura-x","50%");
       card.style.setProperty("--aura-y","50%");
-      card.style.setProperty("--holo-size","76px");
+      card.style.setProperty("--holo-size","38px");
       setHoloTarget(50,50);
       card.style.setProperty("--portrait-img-x","0px");
       card.style.setProperty("--portrait-img-y","0px");
@@ -185,12 +191,18 @@
       clearTimeout(portraitTimer);
       cancelAnimationFrame(holoScanRaf);
       card.classList.add("is-pressed","portrait-active");
-      setPortraitAura(e, 165);
+      const hit = setPortraitAura(e);
+      if (!hit) return;
+      // Snap spotlight directly to tapped region (forehead/eyes/nose) with subtle localized micro-shimmer
+      holoCurrentX = hit.px;
+      holoCurrentY = hit.py;
+      card.style.setProperty("--holo-x", hit.px.toFixed(2) + "%");
+      card.style.setProperty("--holo-y", hit.py.toFixed(2) + "%");
       const t0 = performance.now();
       const stepScan = now => {
-        const p = Math.min(1, (now - t0) / 880);
-        const sx = 50 + Math.sin(p * Math.PI * 2) * 20;
-        const sy = 44 + Math.cos(p * Math.PI * 1.5) * 12;
+        const p = Math.min(1, (now - t0) / 760);
+        const sx = Math.max(8, Math.min(92, hit.px + Math.sin(p * Math.PI * 2) * 2.4));
+        const sy = Math.max(8, Math.min(92, hit.py + Math.cos(p * Math.PI * 2) * 2.0));
         card.style.setProperty("--aura-x",sx.toFixed(1)+"%");
         card.style.setProperty("--aura-y",sy.toFixed(1)+"%");
         setHoloTarget(sx, sy);
@@ -199,20 +211,20 @@
         }
       };
       holoScanRaf = requestAnimationFrame(stepScan);
-      portraitTimer = setTimeout(resetPortrait, 2400);
+      portraitTimer = setTimeout(resetPortrait, 2200);
     };
     card.addEventListener("pointermove", e => {
       if (reduce) return;
       const r = mediaEl.getBoundingClientRect();
       const x = (e.clientX-r.left)/r.width-.5;
       const y = (e.clientY-r.top)/r.height-.5;
-      setPortraitAura(e, 118);
+      if (isPortrait) setPortraitAura(e);
       if (innerWidth < 641 || e.pointerType === "touch") return;
       card.style.transform =
         `perspective(1100px) rotateX(${(-y*3.8).toFixed(2)}deg) rotateY(${(x*5.2).toFixed(2)}deg) translateY(-2px)`;
     });
     mediaEl.addEventListener("pointerenter", e => {
-      if (isPortrait && !reduce) setPortraitAura(e, 118);
+      if (isPortrait && !reduce) setPortraitAura(e);
     });
     mediaEl.addEventListener("pointerdown", e => {
       if (isPortrait && !reduce) runTapHoloScan(e);
@@ -225,8 +237,8 @@
         clearTimeout(portraitTimer);
         cancelAnimationFrame(holoScanRaf);
         card.classList.add("is-pressed","portrait-active");
-        setPortraitAura(e, 155);
-        portraitTimer = setTimeout(resetPortrait, 1500);
+        setPortraitAura(e);
+        portraitTimer = setTimeout(resetPortrait, 1600);
       }
     }, {passive:true});
     card.addEventListener("pointerleave", () => {
@@ -384,7 +396,7 @@
   }, {passive:true});
 
   const interactiveItems = document.querySelectorAll(
-    "a,button,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-cta,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.tilt"
+    "a,button,.project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.honor-link,.exp-row,.time-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-mail,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.tilt"
   );
 
   interactiveItems.forEach(el => {
@@ -412,11 +424,11 @@
     el.style.setProperty("--motion-y", (ny * 9).toFixed(2) + "px");
   };
 
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.exp-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-cta,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.honor-link,.exp-row,.time-row,.clarity-callout,.skill-pill,.social-orb,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-mail,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
     let pressTimer = 0;
     const delayedClear = () => {
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => el.classList.remove("is-pressed"), 720);
+      pressTimer = setTimeout(() => el.classList.remove("is-pressed"), 820);
     };
     const clearPressed = e => {
       if (e?.pointerType === "touch" || e?.type?.startsWith("touch")) {
@@ -443,12 +455,13 @@
     el.addEventListener("touchcancel", clearPressed, {passive:true});
   });
 
-  // Spotlight values for cards.
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.exp-row,.clarity-callout,.profile-panel,.social-orb").forEach(card => {
+  // Spotlight values for cards on both desktop hover and mobile touch/drag.
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.exp-row,.time-row,.clarity-callout,.profile-panel,.social-orb,.contact-form-panel").forEach(card => {
     card.addEventListener("pointermove", e => {
       setInteractionPoint(card, e);
-    });
+    }, {passive:true});
     card.addEventListener("touchstart", e => setInteractionPoint(card, e), {passive:true});
+    card.addEventListener("touchmove", e => setInteractionPoint(card, e), {passive:true});
   });
 
   let lastScrollPos = -1;
@@ -530,7 +543,15 @@
     const submitBtn = contactForm.querySelector(".contact-submit");
     const submitLabel = submitBtn?.querySelector(".contact-button-label");
     const statusBox = document.getElementById("contact-status");
+    const charCount = document.getElementById("contact-char-count");
     const emailRegex = /^[^\s@<>()[\]\\,;:\s@"]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+    const syncCharCount = () => {
+      if (charCount && messageInput) charCount.textContent = `${messageInput.value.length} / 4000`;
+    };
+    messageInput?.addEventListener("input", syncCharCount);
+    contactForm.addEventListener("reset", () => setTimeout(syncCharCount, 0));
+    syncCharCount();
 
     topicChips.forEach(chip => {
       chip.addEventListener("click", () => {
