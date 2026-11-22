@@ -424,11 +424,11 @@
     el.style.setProperty("--motion-y", (ny * 9).toFixed(2) + "px");
   };
 
-  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.honor-link,.exp-row,.time-row,.clarity-callout,.skill-pill,.social-orb,.contact-email-hero,.contact-copy-inline,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-mail,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link").forEach(el => {
+  document.querySelectorAll(".project,.service-card,.stack-card,.stack-node,.stack-core,.paper,.mini-project,.cert,.cert-extra,.metric-card,.profile-mini,.detail-card,.detail-item,.edu-hero-card,.edu-honor-card,.edu-course-pill,.honor-link,.exp-row,.time-row,.clarity-callout,.skill-pill,.social-orb,.contact-email-hero,.contact-copy-inline,.btn,.navcta,.nav-toggle,.navlinks a,.nav-drawer-mail,.nav-drawer-socials a,.brand,.topic-chip,.portrait-bottom,.evidence-link,.about-work-link,.lab-enter").forEach(el => {
     let pressTimer = 0;
     const delayedClear = () => {
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => el.classList.remove("is-pressed"), 820);
+      pressTimer = setTimeout(() => el.classList.remove("is-pressed"), 1500);
     };
     const clearPressed = e => {
       if (e?.pointerType === "touch" || e?.type?.startsWith("touch")) {

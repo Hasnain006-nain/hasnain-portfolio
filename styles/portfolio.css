@@ -131,7 +131,7 @@
     font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
     transition:.3s cubic-bezier(.2,.8,.2,1);
   }
-  .lab-enter:hover{transform:translateX(-50%) translateY(-3px);background:rgba(255,255,255,.68);border-color:rgba(8,9,13,.22)}
+  .lab-enter:is(:hover,:active,.is-pressed){transform:translateX(-50%) translateY(-3px);background:rgba(255,255,255,.68);border-color:rgba(8,9,13,.22)}
   .lab-enter i{
     display:block;width:28px;height:28px;border-radius:50%;background:#0b0c10;position:relative;
   }
@@ -3961,6 +3961,8 @@
   .project,.service-card,.btn,.cert,.mini-project,.metric-card,.skill-pill{-webkit-tap-highlight-color:transparent}
 
   @media (hover:none){
+    .lab-enter:active{transform:translateX(-50%) translateY(-3px);background:rgba(255,255,255,.68);border-color:rgba(8,9,13,.22)}
+    .lab-quote a:active{color:#125f5a;text-decoration-color:currentColor}
     .project:active,.service-card:active,.cert:active,.mini-project:active,.metric-card:active{
       transform:translateY(-3px) scale(.985);
       border-color:rgba(97,246,214,.34);

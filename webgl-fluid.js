@@ -70,12 +70,24 @@ function runSimulation(config) {
     this.deltaY = 0;
     this.down = false;
     this.moved = false;
+    this.isTouch = false;
     this.color = [30, 0, 300];
   }
 
   let pointers = [];
   let splatStack = [];
   pointers.push(new pointerPrototype());
+
+  // Touch screens have no hover, so the hero would stay blank until a
+  // hard rub. On coarse pointers the fluid paints itself gently, and
+  // pauses while the user (or a mouse) is painting.
+  const isCoarsePointer =
+    window.matchMedia("(pointer: coarse)").matches || isMobile();
+  let lastTouchAt = 0;
+  let lastMouseAt = 0;
+  let ambientT = Math.random() * Math.PI * 2;
+  let lastAmbientCheck = 0;
+  let labVisible = true;
 
   const { gl, ext } = getWebGLContext(canvas);
 
@@ -1301,6 +1313,7 @@ function runSimulation(config) {
     const dt = calcDeltaTime();
     if (resizeCanvas()) initFramebuffers();
     updateColors(dt);
+    applyAmbient(dt);
     applyInputs();
     if (!config.PAUSED) step(dt);
     render(null);
@@ -1325,6 +1338,35 @@ function runSimulation(config) {
         p.color = generateColor();
       });
     }
+  }
+
+  function applyAmbient(dt) {
+    if (!isCoarsePointer) return;
+    const now = Date.now();
+    if (now - lastTouchAt < 2500 || now - lastMouseAt < 2500) return;
+    if (document.hidden) return;
+    if (performance.now() - lastAmbientCheck > 500) {
+      lastAmbientCheck = performance.now();
+      const r = canvas.getBoundingClientRect();
+      labVisible = r.bottom > 0 && r.top < window.innerHeight;
+    }
+    if (!labVisible) return;
+    ambientT += dt * 0.8;
+    const pointer = pointers[0];
+    if (pointer.texcoordX === 0 && pointer.texcoordY === 0) {
+      pointer.texcoordX = 0.5;
+      pointer.texcoordY = 0.5;
+      pointer.prevTexcoordX = 0.5;
+      pointer.prevTexcoordY = 0.5;
+    }
+    pointer.prevTexcoordX = pointer.texcoordX;
+    pointer.prevTexcoordY = pointer.texcoordY;
+    pointer.texcoordX = 0.5 + 0.32 * Math.sin(ambientT * 0.9);
+    pointer.texcoordY = 0.5 + 0.24 * Math.sin(ambientT * 1.7 + 1.3);
+    pointer.deltaX = correctDeltaX(pointer.texcoordX - pointer.prevTexcoordX);
+    pointer.deltaY = correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
+    pointer.moved = true;
+    pointer.down = true;
   }
 
   function applyInputs() {
@@ -1594,8 +1636,11 @@ function runSimulation(config) {
   }
 
   function splatPointer(pointer) {
-    let dx = pointer.deltaX * config.SPLAT_FORCE;
-    let dy = pointer.deltaY * config.SPLAT_FORCE;
+    // Small finger moves make small deltas: boost touch splats so a
+    // light swipe paints as strongly as a mouse flick.
+    const touchBoost = pointer.isTouch ? 2.2 : 1;
+    let dx = pointer.deltaX * config.SPLAT_FORCE * touchBoost;
+    let dy = pointer.deltaY * config.SPLAT_FORCE * touchBoost;
     splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
   }
 
@@ -1644,6 +1689,8 @@ function runSimulation(config) {
   // Mouse Movements
   canvas.addEventListener("mousemove", (e) => {
     let pointer = pointers[0];
+    pointer.isTouch = false;
+    lastMouseAt = Date.now();
     let posX = scaleByPixelRatio(e.offsetX);
     let posY = scaleByPixelRatio(e.offsetY);
 
@@ -1672,6 +1719,13 @@ function runSimulation(config) {
         let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
         let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
         updatePointerDownData(pointers[i + 1], touches[i].identifier, posX, posY);
+        // A tap alone must paint: a small synthetic flick so the next
+        // frame splats colour at the touch point, no hard rub needed.
+        pointers[i + 1].isTouch = true;
+        pointers[i + 1].deltaX = 0.012;
+        pointers[i + 1].deltaY = 0.008;
+        pointers[i + 1].moved = true;
+        lastTouchAt = Date.now();
       }
     },
     { passive: true }
@@ -1682,9 +1736,11 @@ function runSimulation(config) {
     (e) => {
       const touches = e.targetTouches;
       const rect = canvas.getBoundingClientRect();
+      lastTouchAt = Date.now();
       for (let i = 0; i < touches.length; i++) {
         let pointer = pointers[i + 1];
         if (!pointer || !pointer.down) continue;
+        pointer.isTouch = true;
         let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
         let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
         updatePointerMoveData(pointer, posX, posY);
@@ -1694,6 +1750,7 @@ function runSimulation(config) {
   );
 
   window.addEventListener("touchend", (e) => {
+    lastTouchAt = Date.now();
     const touches = e.changedTouches;
     for (let i = 0; i < touches.length; i++) {
       let pointer = pointers.find((p) => p.id == touches[i].identifier);
