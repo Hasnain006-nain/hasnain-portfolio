@@ -29,15 +29,15 @@ SOFTWARE.
 
 const DEFAULT_CONFIG = {
   SIM_RESOLUTION: 128,
-  DYE_RESOLUTION: 768,
+  DYE_RESOLUTION: 1024,
   CAPTURE_RESOLUTION: 512,
-  DENSITY_DISSIPATION: 0.72,
-  VELOCITY_DISSIPATION: 0.55,
+  DENSITY_DISSIPATION: 1,
+  VELOCITY_DISSIPATION: 1,
   PRESSURE: 0.25,
-  PRESSURE_ITERATIONS: 16,
-  CURL: 18,
-  SPLAT_RADIUS: 0.22,
-  SPLAT_FORCE: 6200,
+  PRESSURE_ITERATIONS: 20,
+  CURL: 0,
+  SPLAT_RADIUS: 0.15,
+  SPLAT_FORCE: 6000,
   SHADING: true,
   COLORFUL: true,
   COLOR_UPDATE_SPEED: 10,
@@ -45,13 +45,13 @@ const DEFAULT_CONFIG = {
   BACK_COLOR: { r: 255, g: 255, b: 255 },
   TRANSPARENT: false,
   BLOOM: false,
-  BLOOM_ITERATIONS: 6,
+  BLOOM_ITERATIONS: 8,
   BLOOM_RESOLUTION: 256,
   BLOOM_INTENSITY: 0.8,
   BLOOM_THRESHOLD: 0.6,
   BLOOM_SOFT_KNEE: 0.7,
   SUNRAYS: true,
-  SUNRAYS_RESOLUTION: 128,
+  SUNRAYS_RESOLUTION: 196,
   SUNRAYS_WEIGHT: 1.0,
   RANDOM_COLORS: true,
   SPLAT_HUE: 0,
@@ -478,6 +478,7 @@ function runSimulation(config, preferredBackend) {
     this.deltaY = 0;
     this.down = false;
     this.moved = false;
+    this.isTouch = false;
     this.color = [30, 0, 300];
   }
 
@@ -509,7 +510,6 @@ function runSimulation(config, preferredBackend) {
     config.SIM_RESOLUTION = 96;
     config.DYE_RESOLUTION = 512;
     config.PRESSURE_ITERATIONS = 14;
-    config.SPLAT_RADIUS = 0.25;
     config.SUNRAYS_RESOLUTION = 128;
     // Keep sunrays off if native R16F or linear filtering is absent on mobile GPUs
     if (!ext.supportLinearFiltering || !ext.isWebGL2) {
@@ -1652,107 +1652,20 @@ function runSimulation(config, preferredBackend) {
   let contextLost = false;
   let renderedFrames = 0;
   let totalSplats = 0;
-  let ambientTimer = 0;
-  let ambientPhase = 0;
-  let lastInteractionAt = 0;
-  let colorCycleIdx = 0;
-  const vividHues = [0.47, 0.58, 0.74, 0.89, 0.04, 0.36, 0.64, 0.96, 0.14];
 
-  function generateVibrantColor(hueOverride) {
-    const hue =
-      typeof hueOverride === "number"
-        ? hueOverride
-        : config.RANDOM_COLORS
-        ? (vividHues[colorCycleIdx++ % vividHues.length] +
-            (Math.random() - 0.5) * 0.06 +
-            1) %
-          1
-        : config.SPLAT_HUE;
-    const c = HSVtoRGB(hue, 0.95, 1.0);
-    c.r *= 0.20;
-    c.g *= 0.20;
-    c.b *= 0.20;
-    return c;
-  }
-
-  function emitDirectionalWave(x, y, dx, dy, intensity = 6.5, hueOverride) {
-    const color = generateVibrantColor(hueOverride);
-    color.r *= intensity;
-    color.g *= intensity;
-    color.b *= intensity;
-    splat(x, y, dx, dy, color);
-    totalSplats++;
-  }
-
-  function emitOpeningChoreography() {
-    // Frame 0 immediate lush multi-color bloom around viewport edges & diagonals
-    const immediateSeeds = [
-      [0.14, 0.82, 540, -340, 0.47],
-      [0.86, 0.78, -520, -300, 0.74],
-      [0.18, 0.20, 520, 340, 0.89],
-      [0.82, 0.22, -520, 320, 0.58],
-      [0.50, 0.88, 280, -480, 0.04],
-      [0.50, 0.14, -260, 480, 0.36],
-      [0.08, 0.50, 620, 90, 0.64],
-      [0.92, 0.50, -620, -90, 0.96],
-    ];
-    immediateSeeds.forEach(([x, y, dx, dy, hue]) =>
-      emitDirectionalWave(x, y, dx, dy, 6.2, hue)
-    );
-    // Pre-advect a few micro-steps so colors already curl like liquid silk on Frame 1
-    for (let i = 0; i < 6; i++) {
-      step(0.016);
-    }
-
-    // Smooth staggered ribbon sweeps across the first ~1s so colors open like liquid silk
-    const staggeredWaves = [
-      { delay: 220, x: 0.24, y: 0.72, dx: 480, dy: -220, hue: 0.56 },
-      { delay: 260, x: 0.76, y: 0.30, dx: -480, dy: 240, hue: 0.86 },
-      { delay: 540, x: 0.72, y: 0.74, dx: -420, dy: -280, hue: 0.46 },
-      { delay: 580, x: 0.28, y: 0.26, dx: 440, dy: 280, hue: 0.06 },
-      { delay: 900, x: 0.50, y: 0.66, dx: 360, dy: 180, hue: 0.72 },
-      { delay: 940, x: 0.50, y: 0.34, dx: -360, dy: -180, hue: 0.38 },
-    ];
-    staggeredWaves.forEach((w) => {
-      setTimeout(() => {
-        if (!contextLost && isLabVisible && !document.hidden) {
-          emitDirectionalWave(w.x, w.y, w.dx, w.dy, 5.8, w.hue);
-        }
-      }, w.delay);
-    });
-  }
-
-  function emitAmbientWave() {
-    ambientPhase = (ambientPhase + 1) % 6;
-    const patterns = [
-      [0.12, 0.76, 460, -240],
-      [0.88, 0.26, -460, 260],
-      [0.84, 0.78, -420, -280],
-      [0.16, 0.24, 440, 280],
-      [0.52, 0.86, 260, -420],
-      [0.48, 0.14, -260, 420],
-    ];
-    const [x, y, dx, dy] = patterns[ambientPhase];
-    const jitterX = (Math.random() - 0.5) * 0.1;
-    const jitterY = (Math.random() - 0.5) * 0.1;
-    emitDirectionalWave(
-      Math.max(0.06, Math.min(0.94, x + jitterX)),
-      Math.max(0.06, Math.min(0.94, y + jitterY)),
-      dx,
-      dy,
-      5.4
-    );
+  function triggerInitialSplats() {
+    const count = parseInt(Math.random() * 20) + 5;
+    multipleSplats(count);
+    totalSplats += count;
   }
 
   if (labSection && "IntersectionObserver" in window) {
     new IntersectionObserver(
       (entries) => {
         const nowVisible = Boolean(entries[0]?.isIntersecting);
-        const returning = !isLabVisible && nowVisible;
         isLabVisible = nowVisible;
-        if (returning && !contextLost) {
+        if (nowVisible && !contextLost) {
           lastUpdateTime = Date.now();
-          emitAmbientWave();
         }
       },
       { threshold: 0.01 }
@@ -1762,7 +1675,6 @@ function runSimulation(config, preferredBackend) {
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       lastUpdateTime = Date.now();
-      if (isLabVisible && !contextLost) emitAmbientWave();
     }
   });
 
@@ -1780,7 +1692,7 @@ function runSimulation(config, preferredBackend) {
       contextLost = false;
       updateKeywords();
       initFramebuffers();
-      emitOpeningChoreography();
+      triggerInitialSplats();
     },
     false
   );
@@ -1790,13 +1702,13 @@ function runSimulation(config, preferredBackend) {
     frames: 0,
     splats: 0,
     active: true,
-    triggerBurst: emitOpeningChoreography,
+    triggerBurst: triggerInitialSplats,
   };
   window.__fluidEngine = engineDiag;
 
   updateKeywords();
   initFramebuffers();
-  emitOpeningChoreography();
+  triggerInitialSplats();
 
   let lastUpdateTime = Date.now();
   let colorUpdateTimer = 0.0;
@@ -1815,20 +1727,9 @@ function runSimulation(config, preferredBackend) {
     const dt = calcDeltaTime();
     if (resizeCanvas()) {
       initFramebuffers();
-      emitAmbientWave();
     }
     updateColors(dt);
     applyInputs();
-
-    // Keep smooth colorful waves drifting gracefully on mobile & desktop when idle
-    ambientTimer += dt;
-    const idleFor = Date.now() - lastInteractionAt;
-    const ambientInterval = mobile ? 2.1 : 2.6;
-    if (ambientTimer >= ambientInterval && idleFor > 1400) {
-      ambientTimer = 0;
-      emitAmbientWave();
-    }
-
     if (!config.PAUSED) step(dt);
     render(null);
     renderedFrames++;
@@ -2145,6 +2046,7 @@ function runSimulation(config, preferredBackend) {
     let dx = pointer.deltaX * config.SPLAT_FORCE;
     let dy = pointer.deltaY * config.SPLAT_FORCE;
     splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
+    totalSplats++;
   }
 
   function multipleSplats(amount) {
@@ -2185,19 +2087,14 @@ function runSimulation(config, preferredBackend) {
 
   function correctRadius(radius) {
     let aspectRatio = canvas.width / canvas.height;
-    if (aspectRatio > 1) {
-      radius *= aspectRatio;
-    } else if (aspectRatio > 0) {
-      // Boost vertical splat visibility on portrait mobile screens
-      radius *= Math.min(1.5, 1.0 / Math.max(aspectRatio, 0.55));
-    }
+    if (aspectRatio > 1) radius *= aspectRatio;
     return radius;
   }
 
   // Mouse Movements
   canvas.addEventListener("mousemove", (e) => {
-    lastInteractionAt = Date.now();
     let pointer = pointers[0];
+    pointer.isTouch = false;
     let posX = scaleByPixelRatio(e.offsetX);
     let posY = scaleByPixelRatio(e.offsetY);
 
@@ -2214,7 +2111,6 @@ function runSimulation(config, preferredBackend) {
   canvas.addEventListener(
     "touchstart",
     (e) => {
-      lastInteractionAt = Date.now();
       const touches = e.targetTouches;
       while (touches.length >= pointers.length)
         pointers.push(new pointerPrototype());
@@ -2223,15 +2119,7 @@ function runSimulation(config, preferredBackend) {
         let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
         let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
         updatePointerDownData(pointers[i + 1], touches[i].identifier, posX, posY);
-        // Immediately bloom a smooth color swirl right where the user taps on mobile
-        const angle = Math.random() * Math.PI * 2;
-        emitDirectionalWave(
-          pointers[i + 1].texcoordX,
-          pointers[i + 1].texcoordY,
-          Math.cos(angle) * 460,
-          Math.sin(angle) * 460,
-          5.8
-        );
+        pointers[i + 1].isTouch = true;
       }
     },
     { passive: true }
@@ -2240,12 +2128,12 @@ function runSimulation(config, preferredBackend) {
   canvas.addEventListener(
     "touchmove",
     (e) => {
-      lastInteractionAt = Date.now();
       const touches = e.targetTouches;
       const rect = canvas.getBoundingClientRect();
       for (let i = 0; i < touches.length; i++) {
         let pointer = pointers[i + 1];
         if (!pointer || !pointer.down) continue;
+        pointer.isTouch = true;
         let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
         let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
         updatePointerMoveData(pointer, posX, posY);
@@ -2314,9 +2202,21 @@ function runSimulation(config, preferredBackend) {
     return delta;
   }
 
-  // Updated to allow curated rich rainbow colors or single hue
+  // Original random/single color palette
   function generateColor() {
-    return generateVibrantColor();
+    if (config.RANDOM_COLORS) {
+      let c = HSVtoRGB(Math.random(), 1.0, 1.0);
+      c.r *= 0.15;
+      c.g *= 0.15;
+      c.b *= 0.15;
+      return c;
+    } else {
+      let c = HSVtoRGB(config.SPLAT_HUE, 1.0, 1.0);
+      c.r *= 0.15;
+      c.g *= 0.15;
+      c.b *= 0.15;
+      return c;
+    }
   }
 
   function HSVtoRGB(h, s, v) {

@@ -131,7 +131,7 @@
     font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
     transition:.3s cubic-bezier(.2,.8,.2,1);
   }
-  .lab-enter:hover{transform:translateX(-50%) translateY(-3px);background:rgba(255,255,255,.68);border-color:rgba(8,9,13,.22)}
+  .lab-enter:is(:hover,:active,.is-pressed){transform:translateX(-50%) translateY(-3px);background:rgba(255,255,255,.68);border-color:rgba(8,9,13,.22)}
   .lab-enter i{
     display:block;width:28px;height:28px;border-radius:50%;background:#0b0c10;position:relative;
   }
@@ -1663,8 +1663,9 @@
     .node-pin{right:12px;top:13px;width:7px;height:7px}
   }
   @media (max-width:360px){
-    .stack-system.stack-map{grid-template-columns:1fr}
-    .stack-core,.node-prod{grid-column:auto}
+    .stack-system.stack-map{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .stack-core{grid-column:1 / -1!important;justify-self:center}
+    .node-prod{grid-column:auto!important}
     .stack-node{min-height:150px}
   }
 
@@ -3757,14 +3758,6 @@
   @media (max-width:640px){
     .lab-intro{min-height:620px}
     .lab-copy{width:calc(100% - 28px);top:46%}
-    .lab-copy::before{
-      width:min(360px,84vw);height:210px;
-      background:radial-gradient(ellipse at center,
-        rgba(255,255,255,.56) 0%,
-        rgba(255,255,255,.32) 44%,
-        rgba(255,255,255,0) 80%);
-      filter:blur(14px);
-    }
     .lab-overline{font-size:9px;margin-bottom:18px}
     .lab-title{font-size:66px!important}
     .lab-name{font-size:22px;margin-top:16px}
@@ -3969,6 +3962,8 @@
   .project,.service-card,.btn,.cert,.mini-project,.metric-card,.skill-pill{-webkit-tap-highlight-color:transparent}
 
   @media (hover:none){
+    .lab-enter:active{transform:translateX(-50%) translateY(-3px);background:rgba(255,255,255,.68);border-color:rgba(8,9,13,.22)}
+    .lab-quote a:active{color:#125f5a;text-decoration-color:currentColor}
     .project:active,.service-card:active,.cert:active,.mini-project:active,.metric-card:active{
       transform:translateY(-3px) scale(.985);
       border-color:rgba(97,246,214,.34);
@@ -6649,14 +6644,16 @@
     .exp-row p{font-size:8.8px;line-height:1.34}
     .evidence-link{min-height:22px;font-size:9px;margin-top:4px}
 
-    /* Section 06 Stack: centered margins + compact 2x2 nodes */
+    /* Section 06 Stack: centered margins + full-row core above symmetrical 3x2 nodes (including 360px Samsung) */
     .stack-system.stack-map{
       width:min(540px,calc(100% - 36px));margin:6px auto 0;
       grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
     }
     .stack-core{
+      grid-column:1 / -1!important;justify-self:center;
       width:min(220px,62vw);height:min(220px,62vw);min-height:184px;padding:18px;
     }
+    .stack-node,.node-prod{grid-column:auto!important}
     .stack-core strong{font-size:20px}
     .stack-core p{font-size:9.5px}
     .stack-node{min-height:150px;padding:12px 11px;border-radius:18px 18px 18px 10px}
