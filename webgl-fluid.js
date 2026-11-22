@@ -1351,7 +1351,7 @@ function runSimulation(config) {
       labVisible = r.bottom > 0 && r.top < window.innerHeight;
     }
     if (!labVisible) return;
-    ambientT += dt * 0.8;
+    ambientT += dt * 1.6;
     const pointer = pointers[0];
     if (pointer.texcoordX === 0 && pointer.texcoordY === 0) {
       pointer.texcoordX = 0.5;
@@ -1361,8 +1361,9 @@ function runSimulation(config) {
     }
     pointer.prevTexcoordX = pointer.texcoordX;
     pointer.prevTexcoordY = pointer.texcoordY;
-    pointer.texcoordX = 0.5 + 0.32 * Math.sin(ambientT * 0.9);
-    pointer.texcoordY = 0.5 + 0.24 * Math.sin(ambientT * 1.7 + 1.3);
+    pointer.isTouch = true;
+    pointer.texcoordX = 0.5 + 0.38 * Math.sin(ambientT * 0.9);
+    pointer.texcoordY = 0.5 + 0.3 * Math.sin(ambientT * 1.7 + 1.3);
     pointer.deltaX = correctDeltaX(pointer.texcoordX - pointer.prevTexcoordX);
     pointer.deltaY = correctDeltaY(pointer.texcoordY - pointer.prevTexcoordY);
     pointer.moved = true;
@@ -1641,7 +1642,14 @@ function runSimulation(config) {
     const touchBoost = pointer.isTouch ? 2.2 : 1;
     let dx = pointer.deltaX * config.SPLAT_FORCE * touchBoost;
     let dy = pointer.deltaY * config.SPLAT_FORCE * touchBoost;
-    splat(pointer.texcoordX, pointer.texcoordY, dx, dy, pointer.color);
+    splat(
+      pointer.texcoordX,
+      pointer.texcoordY,
+      dx,
+      dy,
+      pointer.color,
+      pointer.isTouch ? 2.5 : 1
+    );
   }
 
   function multipleSplats(amount) {
@@ -1658,7 +1666,7 @@ function runSimulation(config) {
     }
   }
 
-  function splat(x, y, dx, dy, color) {
+  function splat(x, y, dx, dy, color, radiusScale) {
     splatProgram.bind();
     gl.uniform1i(splatProgram.uniforms.uTarget, velocity.read.attach(0));
     gl.uniform1f(
@@ -1669,7 +1677,7 @@ function runSimulation(config) {
     gl.uniform3f(splatProgram.uniforms.color, dx, dy, 0.0);
     gl.uniform1f(
       splatProgram.uniforms.radius,
-      correctRadius(config.SPLAT_RADIUS / 100.0)
+      correctRadius((config.SPLAT_RADIUS / 100.0) * (radiusScale || 1))
     );
     blit(velocity.write);
     velocity.swap();
@@ -1722,8 +1730,8 @@ function runSimulation(config) {
         // A tap alone must paint: a small synthetic flick so the next
         // frame splats colour at the touch point, no hard rub needed.
         pointers[i + 1].isTouch = true;
-        pointers[i + 1].deltaX = 0.012;
-        pointers[i + 1].deltaY = 0.008;
+        pointers[i + 1].deltaX = 0.04;
+        pointers[i + 1].deltaY = 0.03;
         pointers[i + 1].moved = true;
         lastTouchAt = Date.now();
       }
@@ -1808,15 +1816,15 @@ function runSimulation(config) {
   function generateColor() {
     if (config.RANDOM_COLORS) {
       let c = HSVtoRGB(Math.random(), 1.0, 1.0);
-      c.r *= 0.15;
-      c.g *= 0.15;
-      c.b *= 0.15;
+      c.r *= isCoarsePointer ? 0.4 : 0.15;
+      c.g *= isCoarsePointer ? 0.4 : 0.15;
+      c.b *= isCoarsePointer ? 0.4 : 0.15;
       return c;
     } else {
       let c = HSVtoRGB(config.SPLAT_HUE, 1.0, 1.0);
-      c.r *= 0.15;
-      c.g *= 0.15;
-      c.b *= 0.15;
+      c.r *= isCoarsePointer ? 0.4 : 0.15;
+      c.g *= isCoarsePointer ? 0.4 : 0.15;
+      c.b *= isCoarsePointer ? 0.4 : 0.15;
       return c;
     }
   }
