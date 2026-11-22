@@ -349,7 +349,8 @@
     document.documentElement.style.setProperty("--my", y + "px");
     document.documentElement.style.setProperty("--cursor-speed", speed.toFixed(2) + "px");
     document.documentElement.style.setProperty("--cursor-angle", angle.toFixed(2) + "deg");
-    const safe = isOverPortrait(x, y, target);
+    const inLabView = body.classList.contains("lab-active");
+    const safe = isOverPortrait(x, y, target) || inLabView;
     body.classList.toggle("profile-cursor-safe", safe);
     if (safe) {
       clearSmoke();
@@ -358,6 +359,10 @@
     }
     if (dot) dot.style.transform = `translate3d(${tx}px,${ty}px,0) translate(-50%,-50%)`;
     if (isTouch) {
+      if (inLabView) {
+        body.classList.remove("touch-cursor-active");
+        return;
+      }
       cx = tx;
       cy = ty;
       if (cursor) cursor.style.transform = `translate3d(${cx}px,${cy}px,0) translate(-50%,-50%)`;

@@ -27,9 +27,62 @@ SOFTWARE.
 
 // Simulation section
 
+const DEFAULT_CONFIG = {
+  SIM_RESOLUTION: 128,
+  DYE_RESOLUTION: 768,
+  CAPTURE_RESOLUTION: 512,
+  DENSITY_DISSIPATION: 0.72,
+  VELOCITY_DISSIPATION: 0.55,
+  PRESSURE: 0.25,
+  PRESSURE_ITERATIONS: 16,
+  CURL: 18,
+  SPLAT_RADIUS: 0.22,
+  SPLAT_FORCE: 6200,
+  SHADING: true,
+  COLORFUL: true,
+  COLOR_UPDATE_SPEED: 10,
+  PAUSED: false,
+  BACK_COLOR: { r: 255, g: 255, b: 255 },
+  TRANSPARENT: false,
+  BLOOM: false,
+  BLOOM_ITERATIONS: 6,
+  BLOOM_RESOLUTION: 256,
+  BLOOM_INTENSITY: 0.8,
+  BLOOM_THRESHOLD: 0.6,
+  BLOOM_SOFT_KNEE: 0.7,
+  SUNRAYS: true,
+  SUNRAYS_RESOLUTION: 128,
+  SUNRAYS_WEIGHT: 1.0,
+  RANDOM_COLORS: true,
+  SPLAT_HUE: 0,
+};
+
+function isMobileDevice() {
+  return (
+    /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent || ""
+    ) ||
+    (window.matchMedia &&
+      window.matchMedia("(pointer: coarse)").matches &&
+      window.innerWidth <= 1024)
+  );
+}
+
+function scaleByPixelRatio(input) {
+  const maxDpr = isMobileDevice() ? 1.5 : 2;
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, maxDpr);
+  return Math.floor(input * pixelRatio);
+}
+
+const canvas =
+  document.getElementById("fluid") || document.getElementsByTagName("canvas")[0];
+
 function resizeCanvas() {
+  if (!canvas) return false;
   let width = scaleByPixelRatio(canvas.clientWidth || window.innerWidth || 1);
-  let height = scaleByPixelRatio(canvas.clientHeight || window.innerHeight || 1);
+  let height = scaleByPixelRatio(
+    canvas.clientHeight || window.innerHeight || 1
+  );
   width = Math.max(2, width);
   height = Math.max(2, height);
   if (canvas.width != width || canvas.height != height) {
@@ -40,137 +93,11 @@ function resizeCanvas() {
   return false;
 }
 
-function scaleByPixelRatio(input) {
-  let pixelRatio = window.devicePixelRatio || 1;
-  return Math.floor(input * pixelRatio);
-}
-
-const canvas = document.getElementsByTagName("canvas")[0];
-resizeCanvas();
-
-// Set the properties from the config file
-fetch("config.json")
-  .then((response) => response.json())
-  .then((config) => {
-    runSimulation(config);
-  })
-  .catch((error) => {
-    // Handle errors if the config fails to load
-    alert("Failed to load config. Check the file or network.");
-  });
-
-function runSimulation(config) {
-  function pointerPrototype() {
-    this.id = -1;
-    this.texcoordX = 0;
-    this.texcoordY = 0;
-    this.prevTexcoordX = 0;
-    this.prevTexcoordY = 0;
-    this.deltaX = 0;
-    this.deltaY = 0;
-    this.down = false;
-    this.moved = false;
-    this.color = [30, 0, 300];
-  }
-
-  let pointers = [];
-  let splatStack = [];
-  pointers.push(new pointerPrototype());
-
-  const { gl, ext } = getWebGLContext(canvas);
-
-  if (isMobile()) {
-    config.DYE_RESOLUTION = 512;
-  }
-  if (!ext.supportLinearFiltering) {
-    config.DYE_RESOLUTION = 512;
-    config.SHADING = false;
-    config.BLOOM = false;
-    config.SUNRAYS = false;
-  }
-
-  function getWebGLContext(canvas) {
-    const params = {
-      alpha: true,
-      depth: false,
-      stencil: false,
-      antialias: false,
-      preserveDrawingBuffer: false,
-    };
-
-    let gl = canvas.getContext("webgl2", params);
-    const isWebGL2 = !!gl;
-    if (!isWebGL2)
-      gl =
-        canvas.getContext("webgl", params) ||
-        canvas.getContext("experimental-webgl", params);
-
-    let halfFloat;
-    let supportLinearFiltering;
-    if (isWebGL2) {
-      gl.getExtension("EXT_color_buffer_float");
-      supportLinearFiltering = gl.getExtension("OES_texture_float_linear");
-    } else {
-      halfFloat = gl.getExtension("OES_texture_half_float");
-      supportLinearFiltering = gl.getExtension("OES_texture_half_float_linear");
-    }
-
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-
-    const halfFloatTexType = isWebGL2
-      ? gl.HALF_FLOAT
-      : halfFloat.HALF_FLOAT_OES;
-    let formatRGBA;
-    let formatRG;
-    let formatR;
-
-    if (isWebGL2) {
-      formatRGBA = getSupportedFormat(
-        gl,
-        gl.RGBA16F,
-        gl.RGBA,
-        halfFloatTexType
-      );
-      formatRG = getSupportedFormat(gl, gl.RG16F, gl.RG, halfFloatTexType);
-      formatR = getSupportedFormat(gl, gl.R16F, gl.RED, halfFloatTexType);
-    } else {
-      formatRGBA = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
-      formatRG = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
-      formatR = getSupportedFormat(gl, gl.RGBA, gl.RGBA, halfFloatTexType);
-    }
-
-    return {
-      gl,
-      ext: {
-        formatRGBA,
-        formatRG,
-        formatR,
-        halfFloatTexType,
-        supportLinearFiltering,
-      },
-    };
-  }
-
-  function getSupportedFormat(gl, internalFormat, format, type) {
-    if (!supportRenderTextureFormat(gl, internalFormat, format, type)) {
-      switch (internalFormat) {
-        case gl.R16F:
-          return getSupportedFormat(gl, gl.RG16F, gl.RG, type);
-        case gl.RG16F:
-          return getSupportedFormat(gl, gl.RGBA16F, gl.RGBA, type);
-        default:
-          return null;
-      }
-    }
-
-    return {
-      internalFormat,
-      format,
-    };
-  }
-
-  function supportRenderTextureFormat(gl, internalFormat, format, type) {
-    let texture = gl.createTexture();
+function testRenderTextureFormat(gl, internalFormat, format, type) {
+  let texture = null;
+  let fbo = null;
+  try {
+    texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -188,7 +115,7 @@ function runSimulation(config) {
       null
     );
 
-    let fbo = gl.createFramebuffer();
+    fbo = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.framebufferTexture2D(
       gl.FRAMEBUFFER,
@@ -198,12 +125,443 @@ function runSimulation(config) {
       0
     );
 
-    let status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-    return status == gl.FRAMEBUFFER_COMPLETE;
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    return status === gl.FRAMEBUFFER_COMPLETE;
+  } catch {
+    return false;
+  } finally {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    if (fbo) gl.deleteFramebuffer(fbo);
+    if (texture) gl.deleteTexture(texture);
+  }
+}
+
+function resolveSupportedFormat(gl, internalFormat, format, type, isWebGL2) {
+  if (!testRenderTextureFormat(gl, internalFormat, format, type)) {
+    if (isWebGL2) {
+      switch (internalFormat) {
+        case gl.R16F:
+          return resolveSupportedFormat(gl, gl.RG16F, gl.RG, type, true);
+        case gl.RG16F:
+          return resolveSupportedFormat(gl, gl.RGBA16F, gl.RGBA, type, true);
+        default:
+          return null;
+      }
+    }
+    return null;
+  }
+  return { internalFormat, format };
+}
+
+function inspectGLContext(gl, isWebGL2) {
+  if (!gl) return null;
+  let halfFloatTexType;
+  let supportLinearFiltering = false;
+  let formatRGBA;
+  let formatRG;
+  let formatR;
+
+  if (isWebGL2) {
+    // Request BOTH float and half-float color buffer extensions (critical for iOS Safari & Android Adreno/Mali GPUs)
+    gl.getExtension("EXT_color_buffer_float");
+    gl.getExtension("EXT_color_buffer_half_float");
+    supportLinearFiltering = Boolean(
+      gl.getExtension("OES_texture_float_linear") ||
+        gl.getExtension("OES_texture_half_float_linear")
+    );
+    halfFloatTexType = gl.HALF_FLOAT;
+    formatRGBA = resolveSupportedFormat(
+      gl,
+      gl.RGBA16F,
+      gl.RGBA,
+      halfFloatTexType,
+      true
+    );
+    formatRG = resolveSupportedFormat(
+      gl,
+      gl.RG16F,
+      gl.RG,
+      halfFloatTexType,
+      true
+    );
+    formatR = resolveSupportedFormat(
+      gl,
+      gl.R16F,
+      gl.RED,
+      halfFloatTexType,
+      true
+    );
+  } else {
+    const halfFloat = gl.getExtension("OES_texture_half_float");
+    if (!halfFloat) return null;
+    gl.getExtension("EXT_color_buffer_half_float");
+    gl.getExtension("WEBGL_color_buffer_float");
+    supportLinearFiltering = Boolean(
+      gl.getExtension("OES_texture_half_float_linear")
+    );
+    halfFloatTexType = halfFloat.HALF_FLOAT_OES;
+    formatRGBA = resolveSupportedFormat(
+      gl,
+      gl.RGBA,
+      gl.RGBA,
+      halfFloatTexType,
+      false
+    );
+    formatRG = formatRGBA;
+    formatR = formatRGBA;
+  }
+
+  if (!formatRGBA || !formatRG || !formatR) return null;
+
+  return {
+    isWebGL2,
+    formatRGBA,
+    formatRG,
+    formatR,
+    halfFloatTexType,
+    supportLinearFiltering,
+  };
+}
+
+function probeBestWebGLBackend() {
+  const params = {
+    alpha: true,
+    depth: false,
+    stencil: false,
+    antialias: false,
+    preserveDrawingBuffer: false,
+    powerPreference: "high-performance",
+  };
+
+  for (const mode of ["webgl2", "webgl"]) {
+    try {
+      const probe = document.createElement("canvas");
+      probe.width = 4;
+      probe.height = 4;
+      const gl =
+        mode === "webgl2"
+          ? probe.getContext("webgl2", params)
+          : probe.getContext("webgl", params) ||
+            probe.getContext("experimental-webgl", params);
+      const ext = inspectGLContext(gl, mode === "webgl2");
+      if (ext) {
+        try {
+          gl.getExtension("WEBGL_lose_context")?.loseContext();
+        } catch {}
+        return mode;
+      }
+      if (gl) {
+        try {
+          gl.getExtension("WEBGL_lose_context")?.loseContext();
+        } catch {}
+      }
+    } catch {}
+  }
+  return "canvas2d";
+}
+
+// Silky 60fps Canvas 2D multi-color fluid wave fallback if a device/webview denies WebGL half-float FBOs
+function runCanvas2DFallback(targetCanvas) {
+  const ctx = targetCanvas.getContext("2d", { alpha: false });
+  if (!ctx) return;
+
+  const labEl = document.getElementById("lab");
+  let visible = true;
+  let frames = 0;
+  let splats = 0;
+  const plumes = [];
+  const palette = [
+    [16, 214, 186],
+    [66, 133, 244],
+    [155, 114, 255],
+    [244, 72, 162],
+    [255, 126, 78],
+    [24, 198, 134],
+    [104, 92, 255],
+  ];
+  let hueCursor = 0;
+
+  function resize2D() {
+    resizeCanvas();
+  }
+
+  function addPlume(nx, ny, vx, vy, radiusScale = 1) {
+    const col = palette[hueCursor++ % palette.length];
+    const base = Math.min(targetCanvas.width, targetCanvas.height);
+    plumes.push({
+      x: nx * targetCanvas.width,
+      y: ny * targetCanvas.height,
+      vx: vx * base * 0.008,
+      vy: vy * base * 0.008,
+      r: base * (0.14 + Math.random() * 0.14) * radiusScale,
+      alpha: 0.44,
+      life: 0,
+      maxLife: 135 + Math.random() * 65,
+      col,
+      swirl: (Math.random() - 0.5) * 0.045,
+    });
+    if (plumes.length > 48) plumes.splice(0, plumes.length - 48);
+    splats++;
+  }
+
+  function burstOpening() {
+    const seeds = [
+      [0.18, 0.22, 1.4, 0.7],
+      [0.82, 0.24, -1.3, 0.8],
+      [0.24, 0.78, 1.2, -0.9],
+      [0.78, 0.74, -1.2, -0.8],
+      [0.5, 0.16, 0.4, 1.2],
+      [0.5, 0.84, -0.5, -1.1],
+      [0.12, 0.52, 1.5, -0.2],
+      [0.88, 0.48, -1.5, 0.3],
+    ];
+    seeds.forEach(([x, y, vx, vy], idx) => {
+      setTimeout(() => addPlume(x, y, vx, vy, 1.15), idx * 95);
+    });
+  }
+
+  resize2D();
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+  burstOpening();
+
+  const onPoint = (clientX, clientY, scale = 0.85) => {
+    const rect = targetCanvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const nx = (clientX - rect.left) / rect.width;
+    const ny = (clientY - rect.top) / rect.height;
+    addPlume(
+      nx,
+      ny,
+      (Math.random() - 0.5) * 2.2,
+      (Math.random() - 0.5) * 2.2,
+      scale
+    );
+  };
+
+  targetCanvas.addEventListener(
+    "mousemove",
+    (e) => onPoint(e.clientX, e.clientY, 0.7),
+    { passive: true }
+  );
+  targetCanvas.addEventListener(
+    "touchstart",
+    (e) => {
+      for (const t of e.targetTouches) onPoint(t.clientX, t.clientY, 1.05);
+    },
+    { passive: true }
+  );
+  targetCanvas.addEventListener(
+    "touchmove",
+    (e) => {
+      for (const t of e.targetTouches) onPoint(t.clientX, t.clientY, 0.8);
+    },
+    { passive: true }
+  );
+
+  if (labEl && "IntersectionObserver" in window) {
+    new IntersectionObserver(
+      (entries) => {
+        visible = Boolean(entries[0]?.isIntersecting);
+      },
+      { threshold: 0.01 }
+    ).observe(labEl);
+  }
+
+  let ambientTimer = 0;
+  let lastNow = performance.now();
+
+  function tick(now) {
+    requestAnimationFrame(tick);
+    if (!visible || document.hidden) {
+      lastNow = now;
+      return;
+    }
+    const dt = Math.min(0.05, Math.max(0.008, (now - lastNow) / 1000));
+    lastNow = now;
+    if (resizeCanvas()) {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+    }
+
+    ambientTimer += dt;
+    if (ambientTimer >= 1.6) {
+      ambientTimer = 0;
+      const angle = Math.random() * Math.PI * 2;
+      addPlume(
+        0.15 + Math.random() * 0.7,
+        0.15 + Math.random() * 0.7,
+        Math.cos(angle) * 1.4,
+        Math.sin(angle) * 1.4,
+        1.0
+      );
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,0.045)";
+    ctx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+    for (let i = plumes.length - 1; i >= 0; i--) {
+      const p = plumes[i];
+      p.life += 1;
+      const progress = p.life / p.maxLife;
+      if (progress >= 1) {
+        plumes.splice(i, 1);
+        continue;
+      }
+      const cos = Math.cos(p.swirl);
+      const sin = Math.sin(p.swirl);
+      const nvx = p.vx * cos - p.vy * sin;
+      const nvy = p.vx * sin + p.vy * cos;
+      p.vx = nvx * 0.988;
+      p.vy = nvy * 0.988;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.r *= 1.003;
+
+      const fade = Math.sin(progress * Math.PI) * p.alpha;
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      grad.addColorStop(
+        0,
+        `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${fade.toFixed(3)})`
+      );
+      grad.addColorStop(
+        0.55,
+        `rgba(${p.col[0]},${p.col[1]},${p.col[2]},${(fade * 0.42).toFixed(3)})`
+      );
+      grad.addColorStop(1, `rgba(${p.col[0]},${p.col[1]},${p.col[2]},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    frames++;
+    window.__fluidEngine = {
+      mode: "canvas2d",
+      frames,
+      splats,
+      active: true,
+      triggerBurst: burstOpening,
+    };
+  }
+
+  requestAnimationFrame(tick);
+}
+
+if (canvas) {
+  resizeCanvas();
+  const initialConfig = Object.assign({}, DEFAULT_CONFIG, {
+    BACK_COLOR: Object.assign({}, DEFAULT_CONFIG.BACK_COLOR),
+  });
+  const backend = probeBestWebGLBackend();
+  if (backend === "canvas2d") {
+    runCanvas2DFallback(canvas);
+  } else {
+    try {
+      runSimulation(initialConfig, backend);
+    } catch (err) {
+      console.warn("[fluid] WebGL init error, falling back to Canvas2D:", err);
+      runCanvas2DFallback(canvas);
+    }
+  }
+}
+
+function runSimulation(config, preferredBackend) {
+  function pointerPrototype() {
+    this.id = -1;
+    this.texcoordX = 0;
+    this.texcoordY = 0;
+    this.prevTexcoordX = 0;
+    this.prevTexcoordY = 0;
+    this.deltaX = 0;
+    this.deltaY = 0;
+    this.down = false;
+    this.moved = false;
+    this.color = [30, 0, 300];
+  }
+
+  let pointers = [];
+  let splatStack = [];
+  pointers.push(new pointerPrototype());
+
+  const contextResult = getWebGLContext(canvas, preferredBackend);
+  if (!contextResult) {
+    throw new Error("WebGL half-float context unavailable");
+  }
+  const { gl, ext } = contextResult;
+  const mobile = isMobile();
+  let isSoftwareGPU = false;
+  try {
+    const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+    const rendererStr = String(
+      (dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : "") ||
+        gl.getParameter(gl.RENDERER) ||
+        ""
+    );
+    isSoftwareGPU =
+      /SwiftShader|llvmpipe|Software|Basic Render|Mesa OffScreen|ANGLE.*SwiftShader/i.test(
+        rendererStr
+      );
+  } catch {}
+
+  if (mobile) {
+    config.SIM_RESOLUTION = 96;
+    config.DYE_RESOLUTION = 512;
+    config.PRESSURE_ITERATIONS = 14;
+    config.SPLAT_RADIUS = 0.25;
+    config.SUNRAYS_RESOLUTION = 128;
+    // Keep sunrays off if native R16F or linear filtering is absent on mobile GPUs
+    if (!ext.supportLinearFiltering || !ext.isWebGL2) {
+      config.SUNRAYS = false;
+    }
+  }
+  if (isSoftwareGPU) {
+    config.SIM_RESOLUTION = 64;
+    config.DYE_RESOLUTION = 384;
+    config.PRESSURE_ITERATIONS = 10;
+    config.SUNRAYS = false;
+  }
+  if (!ext.supportLinearFiltering) {
+    config.DYE_RESOLUTION = 512;
+    config.SHADING = false;
+    config.BLOOM = false;
+    config.SUNRAYS = false;
+  }
+
+  function getWebGLContext(canvas, backend) {
+    const params = {
+      alpha: true,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preserveDrawingBuffer: false,
+      powerPreference: "high-performance",
+    };
+
+    let gl = null;
+    let isWebGL2 = false;
+    if (backend === "webgl2") {
+      gl = canvas.getContext("webgl2", params);
+      isWebGL2 = !!gl;
+    }
+    if (!gl) {
+      gl =
+        canvas.getContext("webgl", params) ||
+        canvas.getContext("experimental-webgl", params);
+      isWebGL2 = false;
+    }
+    if (!gl) return null;
+
+    const ext = inspectGLContext(gl, isWebGL2);
+    if (!ext) return null;
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    return { gl, ext };
   }
 
   function isMobile() {
-    return /Mobi|Android/i.test(navigator.userAgent);
+    return isMobileDevice();
   }
 
   function captureScreenshot() {
@@ -1289,22 +1647,212 @@ function runSimulation(config) {
     displayMaterial.setKeywords(displayKeywords);
   }
 
+  const labSection = document.getElementById("lab");
+  let isLabVisible = true;
+  let contextLost = false;
+  let renderedFrames = 0;
+  let totalSplats = 0;
+  let ambientTimer = 0;
+  let ambientPhase = 0;
+  let lastInteractionAt = 0;
+  let colorCycleIdx = 0;
+  const vividHues = [0.47, 0.58, 0.74, 0.89, 0.04, 0.36, 0.64, 0.96, 0.14];
+
+  function generateVibrantColor(hueOverride) {
+    const hue =
+      typeof hueOverride === "number"
+        ? hueOverride
+        : config.RANDOM_COLORS
+        ? (vividHues[colorCycleIdx++ % vividHues.length] +
+            (Math.random() - 0.5) * 0.06 +
+            1) %
+          1
+        : config.SPLAT_HUE;
+    const c = HSVtoRGB(hue, 0.95, 1.0);
+    c.r *= 0.20;
+    c.g *= 0.20;
+    c.b *= 0.20;
+    return c;
+  }
+
+  function emitDirectionalWave(x, y, dx, dy, intensity = 6.5, hueOverride) {
+    const color = generateVibrantColor(hueOverride);
+    color.r *= intensity;
+    color.g *= intensity;
+    color.b *= intensity;
+    splat(x, y, dx, dy, color);
+    totalSplats++;
+  }
+
+  function emitOpeningChoreography() {
+    // Frame 0 immediate lush multi-color bloom around viewport edges & diagonals
+    const immediateSeeds = [
+      [0.14, 0.82, 540, -340, 0.47],
+      [0.86, 0.78, -520, -300, 0.74],
+      [0.18, 0.20, 520, 340, 0.89],
+      [0.82, 0.22, -520, 320, 0.58],
+      [0.50, 0.88, 280, -480, 0.04],
+      [0.50, 0.14, -260, 480, 0.36],
+      [0.08, 0.50, 620, 90, 0.64],
+      [0.92, 0.50, -620, -90, 0.96],
+    ];
+    immediateSeeds.forEach(([x, y, dx, dy, hue]) =>
+      emitDirectionalWave(x, y, dx, dy, 6.2, hue)
+    );
+    // Pre-advect a few micro-steps so colors already curl like liquid silk on Frame 1
+    for (let i = 0; i < 6; i++) {
+      step(0.016);
+    }
+
+    // Smooth staggered ribbon sweeps across the first ~1s so colors open like liquid silk
+    const staggeredWaves = [
+      { delay: 220, x: 0.24, y: 0.72, dx: 480, dy: -220, hue: 0.56 },
+      { delay: 260, x: 0.76, y: 0.30, dx: -480, dy: 240, hue: 0.86 },
+      { delay: 540, x: 0.72, y: 0.74, dx: -420, dy: -280, hue: 0.46 },
+      { delay: 580, x: 0.28, y: 0.26, dx: 440, dy: 280, hue: 0.06 },
+      { delay: 900, x: 0.50, y: 0.66, dx: 360, dy: 180, hue: 0.72 },
+      { delay: 940, x: 0.50, y: 0.34, dx: -360, dy: -180, hue: 0.38 },
+    ];
+    staggeredWaves.forEach((w) => {
+      setTimeout(() => {
+        if (!contextLost && isLabVisible && !document.hidden) {
+          emitDirectionalWave(w.x, w.y, w.dx, w.dy, 5.8, w.hue);
+        }
+      }, w.delay);
+    });
+  }
+
+  function emitAmbientWave() {
+    ambientPhase = (ambientPhase + 1) % 6;
+    const patterns = [
+      [0.12, 0.76, 460, -240],
+      [0.88, 0.26, -460, 260],
+      [0.84, 0.78, -420, -280],
+      [0.16, 0.24, 440, 280],
+      [0.52, 0.86, 260, -420],
+      [0.48, 0.14, -260, 420],
+    ];
+    const [x, y, dx, dy] = patterns[ambientPhase];
+    const jitterX = (Math.random() - 0.5) * 0.1;
+    const jitterY = (Math.random() - 0.5) * 0.1;
+    emitDirectionalWave(
+      Math.max(0.06, Math.min(0.94, x + jitterX)),
+      Math.max(0.06, Math.min(0.94, y + jitterY)),
+      dx,
+      dy,
+      5.4
+    );
+  }
+
+  if (labSection && "IntersectionObserver" in window) {
+    new IntersectionObserver(
+      (entries) => {
+        const nowVisible = Boolean(entries[0]?.isIntersecting);
+        const returning = !isLabVisible && nowVisible;
+        isLabVisible = nowVisible;
+        if (returning && !contextLost) {
+          lastUpdateTime = Date.now();
+          emitAmbientWave();
+        }
+      },
+      { threshold: 0.01 }
+    ).observe(labSection);
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      lastUpdateTime = Date.now();
+      if (isLabVisible && !contextLost) emitAmbientWave();
+    }
+  });
+
+  canvas.addEventListener(
+    "webglcontextlost",
+    (e) => {
+      e.preventDefault();
+      contextLost = true;
+    },
+    false
+  );
+  canvas.addEventListener(
+    "webglcontextrestored",
+    () => {
+      contextLost = false;
+      updateKeywords();
+      initFramebuffers();
+      emitOpeningChoreography();
+    },
+    false
+  );
+
+  const engineDiag = {
+    mode: ext.isWebGL2 ? "webgl2" : "webgl1",
+    frames: 0,
+    splats: 0,
+    active: true,
+    triggerBurst: emitOpeningChoreography,
+  };
+  window.__fluidEngine = engineDiag;
+
   updateKeywords();
   initFramebuffers();
-  multipleSplats(parseInt(Math.random() * 20) + 5);
+  emitOpeningChoreography();
 
   let lastUpdateTime = Date.now();
   let colorUpdateTimer = 0.0;
+  let slowFrameStreak = 0;
+  let qualityDownshifted = isSoftwareGPU;
   update();
 
   function update() {
+    requestAnimationFrame(update);
+    if (contextLost || document.hidden || !isLabVisible) {
+      lastUpdateTime = Date.now();
+      return;
+    }
+
+    const frameStart = performance.now();
     const dt = calcDeltaTime();
-    if (resizeCanvas()) initFramebuffers();
+    if (resizeCanvas()) {
+      initFramebuffers();
+      emitAmbientWave();
+    }
     updateColors(dt);
     applyInputs();
+
+    // Keep smooth colorful waves drifting gracefully on mobile & desktop when idle
+    ambientTimer += dt;
+    const idleFor = Date.now() - lastInteractionAt;
+    const ambientInterval = mobile ? 2.1 : 2.6;
+    if (ambientTimer >= ambientInterval && idleFor > 1400) {
+      ambientTimer = 0;
+      emitAmbientWave();
+    }
+
     if (!config.PAUSED) step(dt);
     render(null);
-    requestAnimationFrame(update);
+    renderedFrames++;
+    engineDiag.frames = renderedFrames;
+    engineDiag.splats = totalSplats;
+
+    // Auto-smooth governor: if a low-power GPU/laptop stalls (>50ms/frame), gracefully drop heavy post-FX
+    if (!qualityDownshifted && renderedFrames > 2) {
+      const frameMs = performance.now() - frameStart;
+      if (frameMs > 50) {
+        slowFrameStreak++;
+        if (slowFrameStreak >= 2) {
+          qualityDownshifted = true;
+          config.SUNRAYS = false;
+          config.DYE_RESOLUTION = Math.min(config.DYE_RESOLUTION, 512);
+          config.SIM_RESOLUTION = Math.min(config.SIM_RESOLUTION, 96);
+          config.PRESSURE_ITERATIONS = Math.min(config.PRESSURE_ITERATIONS, 12);
+          updateKeywords();
+          initFramebuffers();
+        }
+      } else {
+        slowFrameStreak = 0;
+      }
+    }
   }
 
   function calcDeltaTime() {
@@ -1637,23 +2185,25 @@ function runSimulation(config) {
 
   function correctRadius(radius) {
     let aspectRatio = canvas.width / canvas.height;
-    if (aspectRatio > 1) radius *= aspectRatio;
+    if (aspectRatio > 1) {
+      radius *= aspectRatio;
+    } else if (aspectRatio > 0) {
+      // Boost vertical splat visibility on portrait mobile screens
+      radius *= Math.min(1.5, 1.0 / Math.max(aspectRatio, 0.55));
+    }
     return radius;
   }
 
   // Mouse Movements
   canvas.addEventListener("mousemove", (e) => {
+    lastInteractionAt = Date.now();
     let pointer = pointers[0];
     let posX = scaleByPixelRatio(e.offsetX);
     let posY = scaleByPixelRatio(e.offsetY);
 
     if (!pointer.down) {
-      // Pointer is not down, so this is the start of a new move.
-      // Call updatePointerDownData to set the initial position.
       updatePointerDownData(pointer, -1, posX, posY);
     }
-
-    // Now, always update the pointer's movement data
     updatePointerMoveData(pointer, posX, posY);
   });
 
@@ -1664,6 +2214,7 @@ function runSimulation(config) {
   canvas.addEventListener(
     "touchstart",
     (e) => {
+      lastInteractionAt = Date.now();
       const touches = e.targetTouches;
       while (touches.length >= pointers.length)
         pointers.push(new pointerPrototype());
@@ -1672,6 +2223,15 @@ function runSimulation(config) {
         let posX = scaleByPixelRatio(touches[i].clientX - rect.left);
         let posY = scaleByPixelRatio(touches[i].clientY - rect.top);
         updatePointerDownData(pointers[i + 1], touches[i].identifier, posX, posY);
+        // Immediately bloom a smooth color swirl right where the user taps on mobile
+        const angle = Math.random() * Math.PI * 2;
+        emitDirectionalWave(
+          pointers[i + 1].texcoordX,
+          pointers[i + 1].texcoordY,
+          Math.cos(angle) * 460,
+          Math.sin(angle) * 460,
+          5.8
+        );
       }
     },
     { passive: true }
@@ -1680,6 +2240,7 @@ function runSimulation(config) {
   canvas.addEventListener(
     "touchmove",
     (e) => {
+      lastInteractionAt = Date.now();
       const touches = e.targetTouches;
       const rect = canvas.getBoundingClientRect();
       for (let i = 0; i < touches.length; i++) {
@@ -1699,6 +2260,12 @@ function runSimulation(config) {
       let pointer = pointers.find((p) => p.id == touches[i].identifier);
       if (pointer == null) continue;
       updatePointerUpData(pointer);
+    }
+  });
+
+  window.addEventListener("touchcancel", () => {
+    for (let i = 1; i < pointers.length; i++) {
+      updatePointerUpData(pointers[i]);
     }
   });
 
@@ -1747,21 +2314,9 @@ function runSimulation(config) {
     return delta;
   }
 
-  // Updated to allow single colors
+  // Updated to allow curated rich rainbow colors or single hue
   function generateColor() {
-    if (config.RANDOM_COLORS) {
-      let c = HSVtoRGB(Math.random(), 1.0, 1.0);
-      c.r *= 0.15;
-      c.g *= 0.15;
-      c.b *= 0.15;
-      return c;
-    } else {
-      let c = HSVtoRGB(config.SPLAT_HUE, 1.0, 1.0);
-      c.r *= 0.15;
-      c.g *= 0.15;
-      c.b *= 0.15;
-      return c;
-    }
+    return generateVibrantColor();
   }
 
   function HSVtoRGB(h, s, v) {
